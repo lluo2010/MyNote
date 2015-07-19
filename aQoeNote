@@ -1,0 +1,14 @@
+/sys/power/wake_lock
+
+"PowerManagerService.WakeLocks"
+"PowerManagerService"
+
+
+hostent* host_entry = gethostbyname(SERVER_ADDRESS);
+char IPStr[64] = {0};
+if(host_entry !=0){
+sprintf(IPStr, &quot;%d.%d.%d.%d&quot;,(host_entry-&gt;h_addr_list[0][0]&amp;0x00ff),
+(host_entry-&gt;h_addr_list[0][1]&amp;0x00ff),
+(host_entry-&gt;h_addr_list[0][2]&amp;0x00ff),
+(host_entry-&gt;h_addr_list[0][3]&amp;0x00ff));
+}
