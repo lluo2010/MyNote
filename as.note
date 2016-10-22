@@ -1,0 +1,84 @@
+
+java中的：
+Android studio 快捷键 note
+Ctrl+G:定位到指定行.
+Ctrl+B 导航显示相关关联信息,相当于Java的F3.
+F4:感觉痛Ctrl+B,相当于Java的F3.
+Ctrl+N:可以快速的查找你需要打开的类，当你输入类名的时候具有自动补全功能,相当于Java的Ctrl+Shift+T
+Ctrl＋Shift＋N:可以快速打开你输入的文字对应的文件。
+Ctrl+Alt+Shift+N (Navigate|Symbol)全局范围内查找符号(方法/类/成员变量，不包括文件),因为已经有上面两个，一般我们用于查找方法和成员变量。
+Ctrl+F12:查看当前文件结构，在显示的结果里输入想要选择的函数。
+Cmd+o：在当前文件下快速浏览类文件
+Ctrl+Shift+backspace:定位到最后修改过的地方，相当于Java的Ctrl+q.
+
+Alt+F7:整个项目里查看被引用，相当于Java的Ctrl+G
+Ctrl+F7:在当前文件中被引用的。
+Ctrl+shift+F7:Highlight usage in files.
+F3/Shift+F3:查找上一个和下一个.
+
+Ctrl+O:重写父类方法.
+Ctrl+I:实现接口方法,和Java相同的。
+
+Ctrl+Alt+O(Code|Optimize Imports)可设置自动导入包名,自动清除没有用的包名。
+
+
+Ctrl+F:当前文件下查找。
+Ctrl+Shift+F:在指定路径下查找，默认为整个项目下查找。
+Cmd+shift+o：在当前文件下快速浏览整个文件
+
+Ctrl+Space:代码提示,一般是关键字或者变量，自动补全功能 ，相当于eclipse中的Ctrl+/,一般我修改为shift+Space.
+Ctrl+Shift+Space:类名或者接口提示，可以智能提示补全。
+Ctrl+Shift+Enter:可完成没有完成的if, else if, do-while等.
+
+Ctrl+H:显示类的层次结构图
+Ctrl+p:显示选择的方法的参数。
+Ctrl+Q:快速的查看类，函数,变量等的的文档问信息描述。
+Shift+F1(View|External Documentation):在浏览器中查看该类的文档介绍.File|Settings|Web Browsers中可以设置浏览器的类型.(File|Project Structure...)可是设置文档的路径.就是SDK的路径.
+
+Ctrl＋[/]:可以跳到大括号的开头结尾.
+Ctrl+/:使用//注释。
+Ctrl+Shift+/:使用/*...*/注释。
+
+Ctrl+ALT+L:智能格式化代码,如果相中代码就格式化选中， Java中的ctrl+i,如果未选中，则格式化全部，相当于Java中的CTRL+SHIFT+F。
+Alt+向上箭头/Alt+向下箭头:快速在上/下方法直接跳转。
+Ctrl+Alt+方向左键/Ctrl+Alt+方向右键:跳到上/下一次位置，笔记本上这些快捷键被占用了，改成别的。
+
+Alt+拖到鼠标实现块选择。
+Ctrl+Shift+向上箭头/Ctrl+Shift+向下箭头:可移动代码.
+
+
+搜索的时候可是使用*号来代替任意字符.例如*Activity.
+
+Alt+数字：选择显示或者隐藏的面板。
+
+CTRL+F9:构建项目
+SHIFT+F10:构建项目并运行 
+
+Shift+F6:重命名，相当于Java的Shfit+ALT+R.
+Alt+Insert:快速生成getter/setter方法，toString(), equals()和hashCode()等,相当于Eclipse中的Alt+Shift+S.
+
+Alt+ left/right切换代码视图(就是在打开的文件中切换)
+
+Alt+Q(View|Context Info):不需要移动就可以查看到光标锁在的方法的声明.当一个文件有很多行代码的时候比较有用.
+Ctrl+Shift+I:可快速查看该类/方法是怎么实现的,而不需要离开当前的编辑窗口.
+
+
+F2/Shift+F2:可是在不同的错误之间进行跳转.Ctrl+Alt+向上箭头/Ctrl+Alt+向下箭可是在message窗口中跳转到上一个/下一个错误的的地方.
+
+Ctrl+Alt+M:选择一段代码，然后重构为一个函数
+Ctrl+ E:可查看最近使用的文件,在查找工具窗口中使用,可是显示最近的搜索
+
+CTRL+Y:删除整行代码.
+Shift+Enter:新起一行，相当于Vim里的O
+
+
+Alt+Shift+C:可是快速查看最近的修改.
+使用Local History | Show History可是查看到你的所有操作历史.没发现在哪.双击Shift键搜出来了.
+
+十.Reference:
+1.Adnroid Studio使用技巧
+	http://blog.csdn.net/siyehuazhilian/article/details/42060715
+
+http://www.developerphil.com/android-studio-tips-of-the-day-roundup-1/
+http://www.developerphil.com/android-studio-tips-of-the-day-roundup-2/
+http://segmentfault.com/a/1190000002411926

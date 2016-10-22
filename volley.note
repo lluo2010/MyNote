@@ -1,0 +1,121 @@
+一.Volley 中的基本概念
+Volley的调用比较简单，通过 newRequestQueue(…) 函数新建并启动一个请求队列RequestQueue后，只需要往这个RequestQueue不断 add Request 即可。
+
+1.Volley
+	Volley对外暴露的 API，通过 newRequestQueue(…) 函数新建并启动一个请求队列RequestQueue。
+2.Request
+	表示一个请求的抽象类。StringRequest、JsonRequest、ImageRequest 都是它的子类，表示某种类型的请求。
+3.RequestQueue
+	表示请求队列，里面包含一个CacheDispatcher(用于处理走缓存请求的调度线程)、NetworkDispatcher数组(用于处理走网络请求的调度线程)，一个ResponseDelivery(返回结果分发接口)，通过 start() 函数启动时会启动CacheDispatcher和NetworkDispatchers。
+4.CacheDispatcher
+	一个线程，用于调度处理走缓存的请求。启动后会不断从缓存请求队列中取请求处理，队列为空则等待，请求处理结束则将结果传递给ResponseDelivery去执行后续处理。当结果未缓存过、缓存失效或缓存需要刷新的情况下，该请求都需要重新进入NetworkDispatcher去调度处理。
+5.NetworkDispatcher
+	一个线程，用于调度处理走网络的请求。启动后会不断从网络请求队列中取请求处理，队列为空则等待，请求处理结束则将结果传递给ResponseDelivery去执行后续处理，并判断结果是否要进行缓存。
+6.ResponseDelivery
+	返回结果分发接口，目前只有基于ExecutorDelivery的在入参 handler 对应线程内进行分发。
+7.HttpStack
+	处理 Http 请求，返回请求结果。目前 Volley 中有基于 HttpURLConnection 的HurlStack和 基于 Apache HttpClient 的HttpClientStack。
+8.Network
+	调用HttpStack处理请求，并将结果转换为可被ResponseDelivery处理的NetworkResponse。
+9.Cache
+	缓存请求结果，Volley 默认使用的是基于 sdcard 的DiskBasedCache。NetworkDispatcher得到请求结果后判断是否需要存储在 Cache，CacheDispatcher会从 Cache 中取缓存结果。
+
+二.流程
+。。。。
+
+三.Details
+1.RequestQueue
+1)
+	它里面有一个mWaitingRequests，它是一个map,key为request的cacheKey(就是url),value为一个request的queue.
+	private final Map<String, Queue<Request<?>>> mWaitingRequests = new HashMap<String, Queue<Request<?>>>();
+如果发现map里面已经有一个相同的cacheKey的request,则不会再往cacheQueue里添加请求(也就意味着这个请求不会最终再次发到网络上)，而是将其加入map里对应的queue里。
+2)
+对于add一个request到RequestQueue,不管最后使加到cachequeue还是networkqueue，它总是会先加到一个叫mCurrentRequests的Set里，当完成或者取消后，被删除。
+    private final Set<Request<?>> mCurrentRequests = new HashSet<Request<?>>();
+看不出来这个Set是干嘛用的。
+3)Request<T>
+有一个顺序号和一个优先级，默认优先级是normal,ImageRequest优先级是low.顺序号是所有request递增的，其实就是先请求的优先级高。
+所以整个request的优先级是先比较priority,然后比较顺序号，顺序号小的优先级高。
+对于request,字段mShouldCache和缓存有关。这个参数可以通过setShouldCache进行设定，通过shouldCache获取值。如果设为false,则整个过程是不经过缓存的，即它不考虑header里的缓存控制。默认是true,即要考虑header里的缓存的。
+4)Response<T> 
+有一个字段和缓存相关，即cacheEntry.当可以缓存时，cacheEntry不为空。这个是通过http header里的字段判断的，比如Etag, cache-control.
+public final Cache.Entry cacheEntry;
+
+2.关于缓存
+	缓存在文件里的。
+	对于一个request,是不是要发送出去还是从缓存里得到,要看request.shouldCache()，如果为false,直接加到network queue里，由network dispatcher处理。默认是true,所以先加放到cacheQueue里面。
+	在CacheDispatcher里，会查找缓存里是否已经有对应request的缓存，有就从缓存取，没有再加到network queue.
+	对于从网络回来的response,是要根据之前的缓存设置shouldCache以及response里的http header的cache控制来决定的，两个同时满足才缓存response.
+	Code如下：
+	if (request.shouldCache() && response.cacheEntry != null) {
+	cacheEntry是依据http header里面的缓存策略决定的(比如"Expires","Last-Modified"","ETag")，如果可以缓存，则不为null.
+	具体可以查看函数HttpHeaderParser.parseCacheHeaders。
+
+所以类似listview里面的图片的内存缓存和文件缓存都不包含的。
+对于ImageLoader,它里面有一个imageCache,是一个接口，具体怎么实现看使用者，这个是单独针对ImageRequest的，可以使用这个实现图片内存的缓存。
+
+3.关于retry
+imagerequest会做retry,最大2次，其他request感觉不做retry,即0次。
+
+4.ImageLoader
+通过它可以获取图片并在对应的ImageView上显示。
+ImageListener里包含了ImageView,默认的Image resource Id和出错是的image resource id.
+它的大致流程如下：
+首先查看ImageCache里有没有，如果有，直接使用内存的缓存，然后调用imageListener.onResponse().
+如果没有，先查看下mInFlightRequests，看看之前是不是有相同的request正在进行中，如果有，则只需要把对应的imageContainer加入BatchedImageRequest.
+之后完成了就会被通知到。
+
+ImageLoader通过get去获取图片，它的流程如下：
+先在ImageCache中查看下是否有存在缓存，如果没有，再看= mInFlightRequests中是否已经有存在的request,如果有，则如上面描述，只添加一些ImageContainer到BatchedImageRequest.
+如果不存在，则调用mRequestQueue.add(newRequest)添加请求到requestQueue里，requestQueue再按流程处理。
+
+1)ImageContainer
+	包含request相关的bitmap,cachekey,requestUrl以及对应的ImageListener。
+	其中cacheKey由url以及图片的最大长度宽度以及scaleType组成，这和request的cacheKey是不一样的。
+	也就是说，如果url对应的的图片是一样的，但是图片显示的控件大小不同，则虽然是同一个request,但是是不同的ImageContainer.
+2)关于mInFlightRequests:
+    private final HashMap<String, BatchedImageRequest> mInFlightRequests = new HashMap<String, BatchedImageRequest>();
+如果发起Request，会先把request url对应的cachekey以及新new的一个BatchedImageRequest放在mInFlightRequests里，如果request完成了(成功或者出错)，就从中删除。
+每发起一个新的request,都会先去mInFlightRequests去查看是否有正在进行中的，如果有，则不会发起先的，只会往对应的BatchedImageRequest中添加新的ImageContainer(包含了bitmap(可以是空)，以及cachekey,url以及最重要的ImageListener).
+3)关于mBatchedResponses
+	 private final HashMap<String, BatchedImageRequest> mBatchedResponses = new HashMap<String, BatchedImageRequest>();
+当response完成(成功或者失败时)，先把request对应的cacheKey以及BatchedImageRequest放入mBatchedResponses.然后再遍历mBatchedResponses调用container里面listener的onResponse.
+上面的通知操作不上马上做，是有一个100ms的delay.
+4)BatchedImageRequest
+	包含了一个request以及一个ImageContainer的列表。当request完成后可以调用batchResponse里面所有的ImageContainer的ImageListener.
+
+5.NetworkImageView
+它其实也是一个ImageView,扩展了ImageView。
+利用ImageLoader，可以加载网络图片的 ImageView.
+有三个公开的方法：
+1)public void setDefaultImageResId(int defaultImage)
+	设置默认图片，加载图片过程中显示。
+2)public void setErrorImageResId(int errorImage)
+	设置错误图片，加载图片失败后显示。
+3)public void setImageUrl(String url, ImageLoader imageLoader)
+	设置网络图片的 Url 和 ImageLoader，将利用这个 ImageLoader 去获取网络图片。
+如果有新的图片加载请求，会把这个 ImageView 上旧的加载请求取消。
+重写了onDetachedFromWindow，当view离开了依附着的窗体时，即销毁时，会取消request请求，当然也就不会显示图片了。
+
+可以学习一下：
+1.ByteArrayPool
+2.RetryPolicy
+
+
+
+
+
+
+
+十.Reference
+1.Volley源码解析
+	http://www.codekk.com/open-source-project-analysis/detail/Android/grumoon/Volley%20%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90
+2.Android网络框架Volley
+	http://blog.csdn.net/jdsjlzx/article/details/40738181
+	http://blog.csdn.net/t12x3456/article/details/9221611
+3.网络通信框架Volley使用详细说明
+	http://blog.csdn.net/xyz_lmn/article/details/12165391
+4.使用Volley框架的ImageLoader加载网络图片
+	http://sharong.iteye.com/blog/2108600
+
+

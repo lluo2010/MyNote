@@ -1,0 +1,114 @@
+网络通讯要处理的事情:
+1.线程池
+2.连接池
+3.连接的超时和关闭机制
+4.内容解析
+5.逻辑处理
+
+
+
+	Netty 是一个异步的，事件驱动的网络编程框架和工具，使用Netty 可以快速开发出可维护的，高性能、高扩展能力的协议服务及其客户端应用。
+	也就是说，Netty 是一个基于NIO的客户，服务器端编程框架，使用Netty 可以确保你快速和简单的开发出一个网络应用，例如实现了某种协议的客户，服务端应用。Netty相当简化和流线化了网络应用的编程开发过程，例如，TCP和UDP的socket服务开发。
+
+事件驱动的设计思想
+
+	在Netty里，所有事件都来自ChannelEvent接口，这些事件涵盖监听端口、建立连接、读写数据等网络通讯的各个阶段。而事件的处理者就是ChannelHandler，这样，不但是业务逻辑，连网络通讯流程中底层的处理，都可以通过实现ChannelHandler来完成了。
+	事实上，Netty内部的连接处理、协议编解码、超时等机制，都是通过handler完成的。
+	Channel是连接的通道，是ChannelEvent的产生者，而ChannelPipeline可以理解为ChannelHandler的集合。Netty进行事件处理的流程如下：
+图。。。。。。。
+
+Netty的包结构如下：
+01org
+02└── jboss
+03└── netty
+04├── bootstrap 配置并启动服务的类
+05├── buffer 缓冲相关类，对NIO Buffer做了一些封装
+06├── channel 核心部分，处理连接
+07├── container 连接其他容器的代码
+08├── example 使用示例
+09├── handler 基于handler的扩展部分，实现协议编解码等附加功能
+10├── logging 日志
+11└── util 工具类
+
+
+
+ServerBootstrap
+	ServerBootstrap 是一个设置服务的帮助类。你甚至可以在这个服务中直接设置一个Channel通道。然而请注意，这是一个繁琐的过程，大多数情况下并不需要这样做。
+需要一个SocketChannelFactory和一个PipelineFactory
+Pipeline里的Handle用来处理逻辑？？？
+
+	任何时候当服务器接收到一个新的连接，一个新的ChannelPipeline管道对象将被创建，并且所有在这里添加的ChannelHandler对象将被添加至这个新的 ChannelPipeline管道对象。
+
+ChannelFactory:
+	ChannelFactory 是一个创建和管理Channel通道及其相关资源的工厂接口，它处理所有的I/O请求并产生相应的I/O ChannelEvent通道事件。Netty 提供了多种 ChannelFactory 实现。这里我们需要实现一个服务端的例子，因此我们使用NioServerSocketChannelFactory实现。另一件需要注意的事情是这个工厂并自己不负责创建I/O线程。你应当在其构造器中指定该工厂使用的线程池，这样做的好处是你获得了更高的控制力来管理你的应用环境中使用的线程，例如一个包含了安全管理的应用服务。
+
+ChannelHandler
+
+SimpleChannelHandler
+
+ChannelEvent
+	一个ChannelEvent通道事件对象自身存有一个和其关联的Channel对象引用。这个返回的Channel通道对象代表了这个接收 MessageEvent消息事件的连接（connection）。因此，我们可以通过调用这个Channel通道对象的write方法向远程节点写入返回数据。
+
+ChannelHandlerContext 
+
+ChannelBuffer接口
+	ChannelBuffer是Netty的一个基本数据结构，这个数据结构存储了一个字节序列。ChannelBuffer类似于NIO的ByteBuffer，但是前者却更加的灵活和易于使用。例如，Netty允许你创建一个由多个ChannelBuffer构建的复合ChannelBuffer类型，这样就可以减少不必要的内存拷贝次数。
+
+	与ByteBuffer相比这种方式拥有明显的优势。Netty使用新的 buffer类型ChannelBuffer，ChannelBuffer被设计为一个可从底层解决ByteBuffer问题，并可满足日常网络应用开发需要的缓冲类型。这些很酷的特性包括：
+	如果需要，允许使用自定义的缓冲类型。
+	复合缓冲类型中内置的透明的零拷贝实现。
+	开箱即用的动态缓冲类型，具有像StringBuffer一样的动态缓冲能力。
+	不再需要调用的flip()方法。
+
+正常情况下具有比ByteBuffer更快的响应速度。
+	Netty为需要传输的数据制定了统一的ChannelBuffer接口。该接口的主要设计思路如下：
+	使用getByte(int index)方法来实现随机访问
+	使用双指针的方式实现顺序访问
+	每个Buffer都有一个读指针（readIndex）和写指针（writeIndex）
+	在读取数据时读指针后移，在写入数据时写指针后移 
+
+dynamicBuffer():
+	动态的buffer缓冲也是ChannelBuffer的一种实现，其拥有动态增加缓冲容量的能力。当你无法预估消息的数据长度时，动态的buffer缓冲是一种很有用的缓冲结构。
+
+
+CompositeChannelBuffer类
+	实现了零拷贝。
+	CompositeChannelBuffer类的作用是将多个ChannelBuffer组成一个虚拟的ChannelBuffer来进行操作。为什么说是虚拟的呢，因为CompositeChannelBuffer并没有将多个ChannelBuffer真正的组合起来，而只是保存了他们的引用，这样就避免了数据的拷贝，实现了Zero Copy。
+
+ChannelBuffers
+	ChannelBuffers是一个可以创建buffer缓冲的帮助类。除了这个buffer方法，ChannelBuffers还提供了很多和ChannelBuffer相关的实用方法。
+
+ChannelFuture
+	一个ChannelFuture 对象代表了一个尚未发生的I/O操作。
+	可以为ChannelFuture增加一个ChannelFutureListener来监听操作的完成。
+
+ChannelGroup
+ChannelGroup是Java 集合 API的一个特有扩展，ChannelGroup内部持有所有打开状态的Channel通道。如果一个Channel通道对象被加入到 ChannelGroup，如果这个Channel通道被关闭，ChannelGroup将自动移除这个关闭的Channel通道对象。此外，你还可以对一个ChannelGroup对象内部的所有Channel通道对象执行相同的操作。
+
+
+
+基于拦截链模式的事件模型
+	一个定义良好并具有扩展能力的事件模型是事件驱动开发的必要条件。Netty具有定义良好的I/O事件模型。由于严格的层次结构区分了不同的事件类型，因此Netty也允许你在不破坏现有代码的情况下实现自己的事件类型。这是与其他框架相比另一个不同的地方。
+	在一个ChannelPipeline内部一个ChannelEvent被一组ChannelHandler处理。这个管道是拦截过滤器 模式的一种高级形式的实现，因此对于一个事件如何被处理以及管道内部处理器间的交互过程，你都将拥有绝对的控制力。
+
+例如，你可以定义一个从socket读取到数据后的操作：
+public class MyReadHandler implements SimpleChannelHandler {  
+    public void messageReceived(ChannelHandlerContext ctx, MessageEvent evt) {  
+    Object message = evt.getMessage();  
+    // Do something with the received message. 
+    // And forward the event to the next handler. 
+    ctx.sendUpstream(evt);  
+
+同时你也可以定义一种操作响应其他处理器的写操作请求：
+public class MyWriteHandler implements SimpleChannelHandler {  
+    public void writeRequested(ChannelHandlerContext ctx, MessageEvent evt) {  
+     Object message = evt.getMessage();  
+     // Do something with the message to be written. 
+     // And forward the event to the next handler. 
+     ctx.sendDownstream(evt);  
+
+
+
+ChannelPipeline
+	A list of ChannelHandlers which handles or intercepts ChannelEvents of a Channel. ChannelPipeline implements an advanced form of the Intercepting Filter pattern to give a user full control over how an event is handled and how the ChannelHandlers in the pipeline interact with each other.
+	For each new channel, a new pipeline must be created and attached to the channel. Once attached, the coupling between the channel and the pipeline is permanent; the channel cannot attach another pipeline to it nor detach the current pipeline from it.

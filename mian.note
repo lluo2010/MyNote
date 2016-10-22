@@ -1,0 +1,109 @@
+NDK,JNI试题 note
+1.NDK(Native Development Kit)是一系列工具的集合。
+	NDK提供了一系列的工具，帮助开发者快速开发C（或C++）的动态库，并能自动将so和java应用一起打包成apk。这些工具对开发者的帮助是巨大的。
+	NDK集成了交叉编译器，并提供了相应的mk文件隔离CPU、平台、ABI等差异，开发人员只需要简单修改mk文件（指出“哪些文件需要编译”、“编译特性要求”等），就可以创建出so。
+	NDK可以自动地将so和Java应用一起打包，极大地减轻了开发人员的打包工作。
+2.什么JNI
+	Java Native Interface(JNI)标准是java平台的一部分，它允许Java代码和其他语言写的代码进行交互。JNI是本地编程接口，它使得在 Java 虚拟机(VM) 内部运行的 Java 代码能够与用其它编程语言(如 C、C++ 和汇编语言)编写的应用程序和库进行交互操作。
+	个人理解，NDK就是能够方便快捷开发.so文件的工具。JNI的过程比较复杂，生成.so需要大量操作，而NDK就是简化了这个过程。
+
+个人感觉：
+	NDK其实多了一个把.so和.apk打包的工具，这个是很重要的。而JNI开发并没有打包，只是把.so文件放到文件系统的特定位置。
+	NDK开发C/C++只能能使用NDK自带的有限的头文件，而使用JNI则可以使用文件系统中带的头文件，比如utils/Log.h
+
+3.为何要用到NDK?
+概括来说主要分为以下几种情况：
+	1) 代码的保护，由于apk的java层代码很容易被反编译，而C/C++库反汇难度较大。
+	2) 在NDK中调用第三方C/C++库，因为大部分的开源库都是用C/C++代码编写的。
+	3) 便于移植，用C/C++写的库可以方便在其他的嵌入式平台上再次使用。
+
+4.开发过程？？
+Java通过JNI机制和C/C++沟通的具体步骤:
+	1)编写包含native本地方法的java类
+	2)通过javah工具生成C/C++语言的头文件
+	3)使用C/C++语言实现头文件
+	4)使用交叉编译工具对C/C++本地代码进行编译，最后通过链接生成*.so可执行的C/C++库
+	5)实际执行Java代码去和本地的C/C++代码互相沟通
+	.....
+。。。。。。。。。。。。。。。。待续
+
+
+5.JNIEnv
+1）
+     The JNIEnv type is a pointer to a structure storing all JNI function pointers. It is defined as follows:
+typedef const struct JNINativeInterface *JNIEnv;
+     JNIEnv类型指向一个结构体的指针，该结构体保存了所有JNI function的指针，JNIEnv定义如下：
+          typedef const struct JNINativeInterface *JNIEnv;
+          const struct JNINativeInterface ... = {
+               NULL,
+               NULL,
+               NULL,
+               NULL,
+               GetVersion,
+               DefineClass,
+               FindClass,
+               FromReflectedMethod,
+               FromReflectedField,
+               ...
+               CallIntMethod,
+               ...
+               CallStaticObjectMethod,
+               ...
+               GetObjectRefType
+            };
+
+2）
+需要强调的是JNIEnv是跟线程相关的。
+     在native method中，JNIEnv作为第一个参数传入,VM负责从Java Stack转入C/C++ Native Stack。当Java进入JNI调用，除了函数本身的参数(arg0),会多出两个参数：JNIEnv指针和jobject指针。
+JNIEnv指针是JVM创建的，用于Native的c/c++方法操纵Java执行栈中的数据，比如Java Class, Java Method等。
+
+3）JNIEnv有几个设计的原则：
+	1) JNIEnv指针被设计成了Thread Local Storage(TLS)变量，也就是说每一个Thread, JNIEnv变量都有独立的Copy。你不能把Thead#1使用的JNIEnv传给Thread#2使用。
+	2) JNIEnv中定义了一组函数指针，c/c++ Native程序是通过这些函数指针操纵Java数据。
+     这样设计的好处是：你的c/c++ 程序不需要依赖任何函数库，或者DLL。由于JVM可能由不同的厂商实现，不同厂商有自己不同的JNI实现，如果要求这些厂商暴露约定好的一些头文件和库，这不是灵活的设计。
+	而且使用函数指针表的另外一个好处是： JVM可以根据启动参数动态替换JNI实现。
+
+6.JavaVM
+	JavaVM是虚拟机在JNI层的代表，在一个虚拟机进程中只有一个JavaVM，因此该进程的所有线程都可以使用这个JavaVM。当后台线程需要调用JNI native时，在native库中使用全局变量保存JavaVM尤为重要，这样使得后台线程能通过JavaVM获得JNIEnv。
+#if defined(__cplusplus) 
+     typedef _JNIEnv JNIEnv;                                 //C++使用这个类型 
+     typedef _JavaVM JavaVM;                                 //C++使用这个类型 
+#else 
+     typedef const struct JNINativeInterface* JNIEnv;        //C使用这个类型 
+     typedef const struct JNIInvokeInterface* JavaVM;        //C使用这个类型 
+#endif 
+
+struct JNIInvokeInterface 
+{ 
+     /****省略了的代码****/ 
+    jint (*GetEnv)(JavaVM*, void**, jint); 
+    jint (*AttachCurrentThreadAsDaemon)(JavaVM*, JNIEnv**, void*); 
+}; 
+
+
+7.JNI中的JavaVM与JNIEnv对象
+	在标准的Java平台下，每个Process里可以产生很多JavaVM对象，每个JavaVM对象都有一个与之对应的JavaVM对象，但是在Android平台上，每个Process只能产生一个DalvikVM对象，也就是说在一个Android的进程中是通过有且只有一个虚拟器对象来服务所有Java和C++代码的。
+	1)JNIEnv *内部包含一个Pointer，Pointer指向Dalvik的JavaVM对象的Fanction Table,JNIEnv *关于程序执行环境的众多函数正是来源于Dalvik虚拟机
+	2)Android中每当一个Java线程第一次要调用本地C/C++代码时，Dalvik虚拟机实例会为该Java线程产生一个JNIEnv *指针
+	3)Java每条线程在和C/C++互相调用时，JNIEnv*是相互独立的，互不干扰,JNIEnv是thread local的。
+	4)每本地的C/C++代码想获得当前线程所要使用的JNIEnv时，可以使用Dalvik VM对象的Java VM* jvm->getEnv()方法，该方法即会返回当前线程所在的JNIEnv*
+
+8.在Android的NDK中，Java、C/C++、Dalvik VM关系如下：
+	1)java的dex字节码和C/C++的*.so同时运行DalvikVM之内，共同使用一个进程空间。每次使用jni调用c/c++开辟一个线程去处理????
+	2)java和C/C++可以相互调用，调用的关键是DalvikVM
+	3)一般而言，比较经典的模式是Java通过JNI的C组建和C++相互沟通，一般业务处理放在C/C++中
+	4)C++代码处于核心控制地位更具价值
+
+	当java需要C/C++代码时，在DalvikVM虚拟机中加载动态链接库时，会先调用JNI_Onload()函数，此时就会把javaVM对象的指针存储于C层JNI组建的全局环境中，在JAVA层调用C层的本地库函数时，调用C本地函数线程必然通过Dalvik VM来调用C本地函数，测试Dalvik虚拟机会为本地的C组建实例化一个JNIEnv指针，该指针指向Dalvik虚拟机的具体函数列表，当JNI的C组件调用java层方法和属性时，需要通过JNIEnv指针来进行调用。
+	当C++组件主动调用Java层方法时，需要通过JNI的C组件把JNIEnv指针传递给C++组件，此后，c++组件即可通过JNIEnv指针来掌控Java层代码。
+
+
+9.需要注意的
+1）虽然Java可以调用native,native也可以调用Java,但永远只考虑Java对C代码的调用
+	Java的优势在于GUI层面, C的优势在于执行效率. Java 涉及的是业务层入口, C考虑的是底层逻辑的执行。
+2) 如果JNI将架构复杂化了, 说明技术上不应该考虑JNI，或者你理解错了.
+
+
+二十.Reference:
+1.NDK 与 JNI 的关系
+	http://blog.csdn.net/banketree/article/details/12167145

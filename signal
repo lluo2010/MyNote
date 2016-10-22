@@ -1,0 +1,157 @@
+signal note
+	信号是linux所使用的进程间通信的最古老的方式。它是在软件层次上对中断机制的一种模拟，是一种异步通信的方式 。一个完整的信号周期包括三个部分，信号的产生，信号在进程中的注册，信号在进程中的注销，执行信号处理函数。
+	如图：
+
+	信号是一种机制，是在软件层次对中断机制的一种模拟，内核让某进程意识到某特殊事情发生了。强迫进程去执行相应的信号处理函数。至于信号的来源可能来自硬件如按下键盘或者硬件故障（如ctrl+c发送SIGINT），可能来自其他进程（kill，sigqueue），可能来自自己进程（raise）。 
+    信号的本质是一种进程间的通信，一个进程可以向另一个进程发送信号，至少传递了signo这个int值。实际上，通信的内容，可以远不止是signo，可以通过SA_SIGINFO标志位通知进程去取额外的信息。
+
+1.对信号的响应由三种方式：
+1)忽略信号，即对信号不做任何的处理。处SIGKILL和SIGSTOP除外。
+2)捕捉该信号，定义信号处理函数，当信号发生时，执行信号处理函数。
+3)执行缺省操作，linux对每种信号都有默认的操作。
+
+2.信号的发送通过kill函数和raise函数，两者的区别在于raise函数可以向本进程发送信号.
+tu:
+
+
+3.信号集sigset_t:
+	信号集是一个能表示多个信号的数据类型，sigset_t set ；set即一个信号集。
+	既然是一个集合，就需要对集合进行添加/删除等操作。
+	int sigemptyset(sigset_t *set); 将set集合置空
+	int sigfillset(sigset_t *set)； 将所有信号加入set集合
+	int sigaddset(sigset_t *set,int signo); 将signo信号加入到set集合
+	int sigdelset(sigset_t *set，int signo); 从set集合中移除signo信号
+	int sigismember(const sigset_t *set,int signo); signo判断信号是否存在于set集合中
+
+4.信号处理的过程如下：
+图：
+
+5.早期signal的问题：
+1)传统的信号处理函数是一次性的，而非永久性的。
+	也就是信号处理函数结束后，信号处理函数已经被设成SIG_DFL。
+2)早期的信号，没有屏蔽正在处理的信号。
+	也就是说如果正在一个信号处理函数中处理该信号，如果该信号又触发了，对于早起的信号，该信号不会屏蔽。
+	对于sigaction,在信号处理函数里，它会屏蔽该信号的。
+	当进程执行一个信号处理程序的函数时，通常屏蔽相应的信号，即自动阻塞这个信号，直到处理程序结束。因此，所处理的信号的另一次出现，并不能中断信号处理程序，所以信号处理函数不必是可以重入的。
+
+3)早期的signal，会中断系统调用。  
+	某些系统调用可能会被信号中断，此时系统调用返回错误EINTR，表示被信号中断了。
+
+glibc的signal函数非常靠谱，传统的signal的几个弊端都不存在.
+
+
+一个进程的信号屏蔽字规定了当前阻塞而不能递送给该进程的信号集 。 调用函数sigprocmask可以检测或更改其信号屏蔽字 ，或者在一个步骤中同时执行这两个操作。
+1)有时候不希望在接到信号时就立即停止当前执行，去处理信号，同时也不希望忽略该信号，而是延时一段时间去调用信号处理函数。这种情况是通过阻塞信号实现的。
+2)信号阻塞和忽略信号的区别。
+	阻塞的概念和忽略信号是不同的。操作系统在信号被进程解除阻塞之前不会讲信号传递出去，被阻塞的信号也不会影响进程的行为，信号只是暂时被阻止传递。当进程忽略一个信号时，信号会被传递出去但进程会将信号丢弃。
+
+6.sigprocmask函数：
+功能描述：
+	设定对信号屏蔽集内的信号的处理方式(阻塞或不阻塞或设置)。
+	调用函数sigprocmask可以检测或更改其信号屏蔽字 ，或者在一个步骤中同时执行这两个操作。
+原型：
+	#include <signal.h>
+	int sigprocmask(int how, const sigset_t *set, sigset_t *oldset);
+	how：用于指定信号修改的方式，可能选择有三种
+		SIG_BLOCK //加入信号到进程屏蔽。
+		SIG_UNBLOCK //从进程屏蔽里将信号删除。
+		SIG_SETMASK //将set的值设定为新的进程屏蔽。
+使用方法为先构建一个sigset_t,然后调用sigprocmask.
+
+
+7.sigsuspend
+	sigsuspend用于在接收到某个信号之前，临时用mask替换进程的信号掩码，并暂停进程执行，直到收到信号为止。
+即参数中的mask是要临时mask阻塞的信号，除了这些mask其他的信号来了或者进程退出了sigsuspend就返回。
+原型：
+#include <signal.h>
+int sigsuspend(const sigset_t *mask);
+	The sigsuspend() function replaces the current signal mask of the calling thread with the set of signals pointed to by sigmask and then suspends the thread until delivery of a signal whose action is either to execute a signal-catching function or to terminate the process.
+	也就是说当前的signal mask被替换为sigsuspend的mask,sigsuspend返回后，mask会被恢复。sigsuspend在signal被signal函数处理后或者进程终止后返回。
+	进程执行到sigsuspend时，sigsuspend并不会立刻返回，进程处于TASK_INTERRUPTIBLE状态并立刻放弃CPU，等待UNBLOCK（mask之外的）信号的唤醒。进程在接收到UNBLOCK（mask之外）信号后，调用处理函数，然后把现在的信号集还原为原来的，sigsuspend返回，进程恢复执行。
+
+sigsuspend的整个原子操作过程为：
+	(1) 设置新的mask阻塞当前进程；
+	(2) 收到信号，恢复原先mask；
+	(3) 调用该进程设置的信号处理函数；
+	(4) 待信号处理函数返回后，sigsuspend返回。
+
+9.sigpending:
+功能：返回在阻塞期间接收到阻塞信号的集合。
+原型；
+int sigpending（sigset_t *set）
+也就是说当我们用sigprocmask后，有些信号被阻塞了，用sigpending可以获取这些阻塞的信号。
+
+例子：
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <unistd.h>
+
+int main( void )
+ {
+   sigset_t set, oset, pset;
+
+   sigemptyset( &set );
+   sigaddset( &set, SIGINT );
+   sigaddset(&set,SIGQUIT);
+   sigaddset(&set,SIGABRT);
+   sigprocmask( SIG_BLOCK, &set, &oset );
+   printf( "Old set was %8.8ld.\n", oset );
+   printf( "set is %8.8ld.\n", set );
+   sigpending( &pset );
+   printf( "Pending set is %8.8ld.\n", pset );
+
+   kill( getpid(), SIGINT );
+   sigpending( &pset );
+   printf( "Pending set is %8.8ld.\n", pset );
+
+   kill( getpid(), SIGQUIT );
+   sigpending( &pset );
+   printf( "Pending set is %8.8ld.\n", pset );
+
+   kill( getpid(), SIGABRT );
+   sigpending( &pset );
+   printf( "Pending set is %8.8ld.\n", pset );
+
+
+/    sigprocmask( SIG_UNBLOCK, &set, &oset );
+
+   if(sigismember(&pset,SIGINT) == 1)
+   {
+   	printf("SIGINT was came.\n");
+   }
+   if(sigismember(&pset,SIGQUIT) == 1)
+   {
+   	printf("SIGQUIT was came.\n");
+   }
+   if(sigismember(&pset,SIGABRT) == 1)
+   {
+   	printf("SIGABRT was came.\n");
+   }
+   /* The program terminates with a SIGINT */
+   return( EXIT_SUCCESS );
+}
+
+运行结果：
+[elbort@elbort test1]$ ./test2
+Old set was 00000000.
+set is  00000038.
+Pending set is 00000000.
+Pending set is 00000002.
+Pending set is 00000006.
+Pending set is 00000038.
+SIGINT was came.
+SIGQUIT was came.
+SIGABRT was came.
+[elbort@elbort test1]$ 
+
+
+10.常用signal对应键
+^\  键盘上是ctrl + \  对应信号 SIGQUIT
+^c  键盘上是ctrl + c  对应信号 SIGINT
+
+二十. Reference
+1.Linux signal那些事儿 
+	http://blog.chinaunix.net/uid-24774106-id-4061386.html
+2.sigsuspend sigprocmask函数的使用方法
+	http://www.tuicool.com/articles/bAVNRf
