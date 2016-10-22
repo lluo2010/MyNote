@@ -1,0 +1,109 @@
+# ormlite
+
+
+
+## xx
+
+获得DAO的方式有两种。
+1.  通过OrmLiteSqliteOpenHelper暴露接口获得，OrmLiteSqliteOpenHelper中默认封装了getDao(Class<T> clazz)方法和getRuntimeExceptionDao(Class<T> clazz)方法便于获得DAO对象。这两个方法本质上是一样的都是通过DAOManage获得对应的DAO对象.
+
+
+
+2. 直接通过DAOManager获得。使用这种方式需要一个ConnectionSource参数，和实体类的Class对象，ConnectionSource参数可以通过OrmLiteSqliteOpenHelper的getConnectionSource()方法获得。
+
+
+## 几个概念/类
+
+### Dao
+
+public interface Dao<T, ID> extends CloseableIterable<T>;
+
+The definition of the Database Access Objects that handle the reading and writing a class from the database. Kudos to  Robert A. for the general concept of this hierarchy.
+
+
+### RuntimeExceptionDao
+
+public class RuntimeExceptionDao<T, ID> implements Dao<T, ID> {
+
+Proxy to a {@link Dao} that wraps each Exception and rethrows it as RuntimeException. You can use this if your usage  pattern is to ignore all exceptions. That's not a pattern that I like so it's not the default.
+
+
+Dao和RuntimeExceptionDao的区别在于对处理异常的方式不一样。如RuntimeExceptionDao的类注释所述，RuntimeExceptionDao只是对异常信息进行了包装处理，并将其作为运行时异常重新抛出。
+
+
+### DaoManager
+
+public class DaoManager;
+
+Class which caches created DAOs. Sometimes internal DAOs are used to support such features as auto-refreshing of  foreign fields or collections of sub-objects. Since instantiation of the DAO is a bit expensive, this class is used  in an attempt to only create a DAO once for each class.
+
+
+
+
+
+## OrmLiteSqliteOpenHelper
+
+public abstract class OrmLiteSqliteOpenHelper extends SQLiteOpenHelper;
+
+SQLite database open helper which can be extended by your application to help manage when the application needs to  create or upgrade its database.
+
+
+
+
+
+
+
+### PreparedQuery
+
+public interface PreparedQuery<T> extends PreparedStmt<T> {
+
+
+Interface returned by the {@link QueryBuilder#prepare()} which supports custom SELECT queries. This should be in turn  passed to the {@link Dao#query(PreparedQuery)} or {@link Dao#iterator(PreparedQuery)} methods.
+
+
+
+### PreparedUpdate
+
+public interface PreparedUpdate<T> extends PreparedStmt<T> {
+
+
+Interface returned by the {@link UpdateBuilder#prepare()} which supports custom UPDATE statements. This should be in  turn passed to the {@link Dao#update(PreparedUpdate)} method.
+
+
+
+### PreparedDelete
+
+public interface PreparedDelete<T> extends PreparedStmt<T> {
+
+Interface returned by the {@link DeleteBuilder#prepare()} which supports custom DELETE statements. This should be in turn passed to the {@link Dao#delete(PreparedDelete)} method.
+
+
+### QueryBuilder
+
+public class QueryBuilder<T, ID> extends StatementBuilder<T, ID>;
+
+
+Assists in building sql query (SELECT) statements for a particular table in a particular database.
+
+
+### UpdateBuilder
+
+public class UpdateBuilder<T, ID> extends StatementBuilder<T, ID>;
+
+Assists in building sql UPDATE statements for a particular table in a particular database.
+
+
+
+### DeleteBuilder
+
+public class DeleteBuilder<T, ID> extends StatementBuilder<T, ID>;
+
+Assists in building sql DELETE statements for a particular table in a particular database.
+
+
+
+
+## Reference
+- [ORMLite document](http://ormlite.com/javadoc/ormlite-core/doc-files/ormlite.html#Top)
+- [ormlite android document](http://ormlite.com/javadoc/ormlite-android/)
+- [ORMLite完全解析（一）](http://my.oschina.net/zengliubao/blog/530135?p=1)

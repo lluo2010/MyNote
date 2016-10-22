@@ -1,0 +1,653 @@
+# Retrofit study note
+
+
+> A type-safe REST client for Android and Java
+
+
+## 待看
+
+
+
+## 简单例子
+
+### 1.定义service接口
+
+里面包含接口
+
+```
+import retrofit.Call;
+
+/* Retrofit 2.0 */
+
+public interface APIService {
+
+@POST("list")
+Call<Repo> loadRepo();
+
+}
+```
+
+
+### 2.创建Retrofit
+```
+Retrofit retrofit = new Retrofit.Builder()
+          .baseUrl("http://api.demo.come/base/")
+          .addConverterFactory(GsonConverterFactory.create())
+          .build();
+```
+
+//最后的url是http://api.demo.come/base/list
+
+
+### 3.创建接口
+
+```
+APIService service = retrofit.create(APIService.class);
+```
+
+### 4.调用接口
+
+#### 同步请求:
+
+使用call.execute
+
+```
+// Synchronous Call in Retrofit 2.0
+
+Call<Repo> call = service.loadRepo();
+Repo repo = call.execute();
+```
+以上的代码会阻塞线程，因此你不能在安卓的主线程中调用，不然会面临NetworkOnMainThreadException。如果你想调用execute方法，请在后台线程执行。
+
+#### 异步请求
+
+使用call.enqueue:
+
+```
+// Synchronous Call in Retrofit 2.0
+     
+Call<Repo> call = service.loadRepo();
+call.enqueue(new Callback<Repo>() {
+    @Override
+    public void onResponse(Response<Repo> response) {
+        // Get result Repo from response.body()
+    }
+ 
+    @Override
+    public void onFailure(Throwable t) {
+ 
+    }
+});
+```
+以上代码发起了一个在后台线程的请求并从response 的response.body()方法中获取一个结果对象。注意这里的onResponse和onFailure方法是在主线程中调用的。
+
+
+## Use an Interceptor from OkHttp
+我们必须使用OkHttp里面的Interceptor。首先你需要实用Interceptor创建一个OkHttpClient对象，如下：
+
+```
+OkHttpClient client = new OkHttpClient();
+client.interceptors().add(new Interceptor() {
+    @Override
+    public Response intercept(Chain chain) throws IOException {
+        Response response = chain.proceed(chain.request());
+        // Do anything with response here
+        return response;
+    }
+});
+
+```
+然后传递创建的client到Retrofit的Builder链中。
+
+```
+Retrofit retrofit =  new Retrofit.Builder()
+        .baseUrl("http://api.demo.come/base/")        
+        .addConverterFactory(GsonConverterFactory.create())        
+        .client(client)        
+        .build();
+```
+
+
+## 参数
+
+### 动态参数（Map）
+使用@QueryMap, 以参数形式传进去:
+
+```
+// 服务
+interface SomeService {
+@GET("/some/endpoint")
+Call<SomeResponse> someEndpoint(@QueryMap Map<String, String> dynamic);
+}
+
+// 方法调用
+someService.someEndpoint(
+Collections.singletonMap("dynamic", "query"));
+```
+
+### 表单编码字段
+
+```
+interface SomeService {
+@FormUrlEncoded
+@POST("/some/endpoint")
+Call<SomeResponse> someEndpoint(
+@Field("name1") String name1,
+@Field("name2") String name2);
+}
+
+someService.someEndpoint("value1", "value2");
+```
+
+出去的内容如下:
+
+```
+// POST /some/endpoint HTTP/1.1
+// Content-Length: 25
+// Content-Type: application/x-www-form-urlencoded
+//
+// name1=value1&name2=value2
+```
+### 表单编码字段（Map）
+
+```
+interface SomeService {
+@FormUrlEncoded
+@POST("/some/endpoint")
+Call<SomeResponse> someEndpoint(
+@FieldMap Map<String, String> names);
+}
+
+someService.someEndpoint(// ImmutableMap是OKHttp中的工具类 ImmutableMap.of("name1", "value1", "name2", "value2"));
+```
+出去的内容如下:
+
+```
+// POST /some/endpoint HTTP/1.1
+// Content-Length: 25
+// Content-Type: application/x-www-form-urlencoded
+//
+// name1=value1&name2=value2
+```
+
+
+
+
+
+## 常用对象及接口
+
+### Call\<T>
+Interface Call\<T>
+
+An invocation of a Retrofit method that sends a request to a webserver and returns a response. Each call yields its own HTTP request and response pair. Use clone() to make multiple calls with the same parameters to the same webserver; this may be used to implement polling or to retry a failed call.
+
+Calls may be executed synchronously with execute(), or asynchronously with enqueue(retrofit2.Callback<T>). In either case the call can be canceled at any time with cancel().
+
+调用请求方法返回的(对应的)一个方法对应的invocation.
+
+采用execute发起同步请求,enqueue发起异步请求. cancel()方法可以取消请求. request()方法原来的HttpRequest.
+
+*** 如果需要再次发送请求,不能再次直接调用execute或者enqueue, 需要先调用clone(). ***
+
+
+主要方法:
+
+Modifier and Type|Method and Description
+:---|:--
+void    enqueue(Callback<T> callback)| Asynchronously send the request and notify callback of its response or if an error occurred talking to the server, creating the request, or processing the response.
+Response<T> execute()| Synchronously send the request and return its response.
+Call<T> clone()| Create a new, identical call to this one which can be enqueued or executed even if this call has already been.
+void    cancel()|Cancel this call.
+boolean isCanceled()| True if cancel() was called.
+boolean isExecuted()| Returns true if this call has been either executed or enqueued.
+okhttp3.Request request()| The original HTTP request.
+
+
+### Callback\<T>
+public interface Callback\<T>
+
+Communicates responses from a server or offline requests. One and only one method will be invoked in response to a given request.
+
+Callback methods are executed using the Retrofit callback executor. When none is specified, the following defaults are used:
+
+- Android: Callbacks are executed on the application's main (UI) thread.
+- JVM: Callbacks are executed on the background thread which performed the request.
+
+请求的返回接口, 包含onFailure和onResponse两个方法,每次只有一个方法会被调用:
+
+- void    onResponse(Call<T> call, Response<T> response): Invoked for a received HTTP response.An HTTP response may still indicate an application-level failure such as a 404 or 500. *** 也就是说, 像http不为200的情况也是调用该方法的. ***
+
+- void    onFailure(Call<T> call, Throwable t):  Invoked when a network exception occurred talking to the server or when an unexpected exception occurred creating the request or processing the response. *** 主要是网络原因导致的失败 ***
+
+对于android来说,方法在UI线程中调用,对于一般的JVM,在请求发起的线程中调用.
+
+
+## okHttp常用对象及接口
+
+### Request
+public final class Request extends Object
+
+An HTTP request. Instances of this class are immutable if their body is null or itself immutable.
+
+表示http的一个请求,包含了body(),headers(),method(),header(String),isHttps(), url()等如下方法:
+
+Modifier and Type|Method and Description
+--|:--
+RequestBody|body() 
+CacheControl    |cacheControl()  Returns the cache control directives for this response.
+String  | header(String name) 
+Headers | headers()
+List<String>|headers(String name) 
+boolean|isHttps() 
+String|method() 
+Request.Builder|newBuilder() 
+Object|tag() 
+String|toString() 
+HttpUrl|url() 
+
+
+### RequestBody
+
+public abstract class RequestBody extends Object
+
+表示请求的body,包含了contentLength(),contentType()函数,一个writeTo(x)方法以及几个创建RequestBody的静态方法create(...).
+
+
+### Response
+
+public final class Response extends Object implements Closeable
+
+An HTTP response. Instances of this class are not immutable: the response body is a one-shot value that may be consumed only once and then closed. All other properties are immutable.
+
+This class implements Closeable. Closing it simply closes its response body.
+
+表示一个request返回的response. 
+
+提供了诸如body(),code()(返回码),header(),headers(),protocol()等表示http response的函数.
+
+
+** 其中body()返回的是ResponseBody. 这个body可以根据converter转化为对应的类型 **,比如我们经常看到下面的例子:
+
+```
+Call<User> call = apiService.getUser(username);
+call.enqueue(new Callback<User>() {
+    @Override
+    public void onResponse(Response<User> response) {
+        int statusCode = response.code();
+        User user = response.body();  
+    }
+    @Override
+    public void onFailure(Throwable t) {
+        // Log error here since request failed
+    }
+});
+```
+
+User user = response.body();  body()返回的类型为ResponseBody,直接转为User了.
+
+
+### ResponseBody
+
+public abstract class ResponseBody extends Object implements Closeable
+
+A one-shot stream from the origin server to the client application with the raw bytes of the response body. Each response body is supported by an active connection to the webserver. This imposes both obligations and limits on the client application.
+
+Both this class and Response implement Closeable. Closing a response simply closes its response body. If you invoke Call.execute() or implement Callback.onResponse(okhttp3.Call, okhttp3.Response) you must close this body by calling any of the following methods:
+
+- Response.close()
+- Response.body().close()
+- Response.body().source().close()
+- Response.body().charStream().close()
+- Response.body().byteString().close()
+- Response.body().bytes()
+- Response.body().string()
+
+表示请求返回的response的body,包含了bytes(),byteStream(),charStream(),string(),contentLength()等返回body内容的方法, close()方法以及其他用于创建ResponseBody的静态方法.
+
+Return type|Method|Description
+:--|:--|:--
+byte[]|bytes() |以字节码形式方法body
+String|string()|Returns the response as a string decoded with the charset of the Content-Type header.以string形式返回body.
+InputStream|byteStream()|以InputStream形式返回body.
+Reader|charStream()|Returns the response as a character stream decoded with the charset of the Content-Type header.以Reader(字符流)形式返回body
+
+
+### Interface Converter<F,T>
+
+public interface Converter<F,T>
+
+Convert objects to and from their representation in HTTP. Instances are created by a factory which is installed into the Retrofit instance.
+
+将某种类型对象转入RequestBody,或者将ResponseBody转化为某类对象. 用到的工厂是在Retrofit创建时指定的.
+
+该接口包含一个Factory抽象工厂类和一个Convert方法,具体如下:
+  
+```
+public interface Converter<F, T> {
+  T convert(F value) throws IOException;
+
+  abstract class Factory {
+    public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations,
+        Retrofit retrofit) {
+      return null;
+    }
+
+    public Converter<?, RequestBody> requestBodyConverter(Type type,
+        Annotation[] parameterAnnotations, Annotation[] methodAnnotations, Retrofit retrofit) {
+      return null;
+    }
+
+    public Converter<?, String> stringConverter(Type type, Annotation[] annotations,
+        Retrofit retrofit) {
+      return null;
+    }
+  }
+}
+```
+
+### Converter.Factory
+
+public abstract static class Converter.Factory extends Object
+
+Creates Converter instances based on a type and target usage.
+
+接口Converter中的抽象类, 用来产生Converter进行转化.
+
+代码如下:
+
+```
+abstract class Factory {
+    
+    public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations,
+        Retrofit retrofit) {
+      return null;
+    }
+
+    public Converter<?, RequestBody> requestBodyConverter(Type type,
+        Annotation[] parameterAnnotations, Annotation[] methodAnnotations, Retrofit retrofit) {
+      return null;
+    }
+
+    public Converter<?, String> stringConverter(Type type, Annotation[] annotations,
+        Retrofit retrofit) {
+      return null;
+    }
+  }
+```
+其中的方法:
+
+方法|作用
+--|--
+responseBodyConverter|产生Converter,用来将ResponseBody转化为指定的类型
+requestBodyConverter|产生Converrter,用来将指定类型转化为RequestBody.
+stringConverter|产生Converrter,用来将指定类型转化为string,This is used to create converters for types specified by @Field, @FieldMap values, @Header, @HeaderMap, @Path, @Query, and @QueryMap values.
+
+*** 方法返回null表示不处理 ***
+
+*** 这里有一个比较有意思的发现,Converter接口里面有一个抽象类Factory,而Factory里面的三个方法需要返回的又都是Converter.***
+
+
+### HttpUrl
+
+xxx
+
+
+
+
+
+## RxJava Integration with CallAdapter
+
+除了使用Call模式来定义接口，我们也可以定义自己的type，比如MyCall。。我们把Retrofit 2.0的这个机制称为CallAdapter。
+
+Retrofit团队有已经准备好了的CallAdapter module。其中最著名的module可能是为RxJava准备的CallAdapter，它将作为Observable返回。要使用它，你的项目依赖中必须包含两个modules。
+
+    compile 'com.squareup.retrofit:adapter-rxjava:2.0.0-beta1'
+    compile 'io.reactivex:rxandroid:1.0.1'
+
+Sync Gradle并在Retrofit Builder链表中如下调用addCallAdapterFactory：
+
+```
+Retrofit retrofit = new Retrofit.Builder()
+        .baseUrl("http://api.nuuneoi.com/base/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+        .build();
+```
+
+你的Service接口现在可以作为Observable返回了！
+
+```
+Retrofit retrofit = new Retrofit.Builder()
+        .baseUrl("http://api.nuuneoi.com/base/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+        .build();
+```
+你可以完全像RxJava那样使用它，如果你想让subscribe部分的代码在主线程被调用，需要把observeOn(AndroidSchedulers.mainThread())添加到链表中。
+
+```
+Observable<DessertItemCollectionDao> observable = service.loadDessertListRx();
+ 
+observable.observeOn(AndroidSchedulers.mainThread())
+    .subscribe(new Subscriber<DessertItemCollectionDao>() {
+        @Override
+        public void onCompleted() {
+            Toast.makeText(getApplicationContext(),
+                    "Completed",
+                    Toast.LENGTH_SHORT)
+                .show();
+        }
+     
+        @Override
+        public void onError(Throwable e) {
+            Toast.makeText(getApplicationContext(),
+                    e.getMessage(),
+                    Toast.LENGTH_SHORT)
+                .show();
+        }
+ 
+        @Override
+        public void onNext(DessertItemCollectionDao dessertItemCollectionDao) {
+            Toast.makeText(getApplicationContext(),
+                    dessertItemCollectionDao.getData().get(0).getName(),
+                    Toast.LENGTH_SHORT)
+                .show();
+        }
+    });
+```
+
+
+
+
+
+
+
+## 一些功能实现
+### 1. log
+
+在生成OkHttpClient时,将Interceptor设成HttpLoggingInterceptor.然后在生成Retrofit时指定client为OkHttpClient:
+
+```
+OkHttpClient httpClient = new OkHttpClient();
+if (BuildConfig.DEBUG) {
+    HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+    logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+    httpClient = new OkHttpClient.Builder().addInterceptor(logging).build();
+}
+mRetrofit = new Retrofit.Builder()
+    .baseUrl(Globals.DEBUG_URL)
+    .addConverterFactory(new STConverterFactory())
+    .client(httpClient)
+    .build();
+
+```
+
+也可以使用下面的方法指定log 到哪里,比如下面指定到logcat:
+
+```
+HttpLoggingInterceptor logging = new HttpLoggingInterceptor(new Logger() {
+  @Override public void log(String message) {
+      Log.i("httplog",message);
+  }
+});
+```
+
+#### 需要添加依赖:
+
+    compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
+
+不需要再添加下面,因为Retrofit已经包含okhttp,如果添加了不同版本的,反而有可能冲突了:
+
+compile 'com.squareup.okhttp3:okhttp:3.4.1'
+
+
+关于HttpLoggingInterceptor
+
+HttpLoggingInterceptor 是一个拦截器，用于输出网络请求和结果的 Log，可以配置 level 为 BASIC / HEADERS / BODY，都很好理解，对应的是原来 retrofit 的 set log level 方法.
+
+
+#### 关于日志级别:
+
+可以根据不同情况配置日志输出的Level：
+
+- NONE 不输出日志
+- BASIC 只输出请求方式响应码等基本信息
+- HEADERS 只输出请求和响应的头部信息
+- BODY 输出请求和响应的头部和请求体信息
+
+
+### 2. 转化器
+
+需要添加自定义的Converter.Factory.
+
+Converter.Factory本身包含一个Converter方法以及一个方法Converter的方法requestBodyConverter和另一个方法Converter的方法responseBodyConverter.
+
+#### 1) requestBodyConverter
+
+Retrofit 允许我们自己定义入参和返回的类型，不过，如果这些类型比较特别，我们还需要准备相应的 Converter，也正是因为 Converter 的存在， Retrofit 在入参和返回类型上表现得非常灵活。
+
+requestBodyConverter返回一个Converter,该Converter用来将请求里的某种类型转化为RequestBody.
+
+比如:
+
+```
+static class FileRequestBodyConverterFactory extends Converter.Factory {    
+    @Override
+    public Converter requestBodyConverter(Type type, Annotation[] parameterAnnotations, Annotation[] methodAnnotations, Retrofit retrofit) {      
+       return new FileRequestBodyConverter();
+    }
+  }  
+       
+static class FileRequestBodyConverter implements Converter<File, RequestBody> {    
+   @Override
+   public RequestBody convert(File file) throws IOException {      
+     return RequestBody.create(MediaType.parse("application/otcet-stream"), file);
+   }
+ }
+```
+
+#### 2) ResponseBodyConverter
+ResponseBodyConverter返回一个Converter, 该Converter用来将服务端返回地内容转化为指定的类型.
+
+如:
+
+```
+public class STConverterFactory extends  Converter.Factory {
+    private final static Gson gson = new GsonBuilder().create();
+
+    @Override
+    public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations, Retrofit retrofit) {
+        return  new STJsonResponseBodyConverter<>(type);
+    }
+
+
+class STJsonResponseBodyConverter<T> implements Converter<ResponseBody, T> {
+        private Type mType;
+
+        public STJsonResponseBodyConverter(Type type){
+            mType = type;
+        }
+
+        @Override
+        public T convert(ResponseBody responseBody) throws IOException {
+            String strResponse = responseBody.string();
+            Type typeToken = TypeToken.get(mType).getType();
+            if (!strResponse.equals("") && !strResponse.equals("[]")) {
+                try {
+                    return gson.fromJson(strResponse, typeToken);
+                } catch (Exception e) {
+                ...
+                    }
+
+                }
+            }
+            ...
+
+        }
+```
+
+
+
+### 3. 与RxJava结合使用
+#### 1) 引入依赖:
+
+```
+    compile 'io.reactivex:rxandroid:1.2.1'
+    compile 'io.reactivex:rxjava:1.1.9'
+    compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
+```
+#### 2) 添加CallAdapterFactory
+Retrofit提供了CallAdapterFactory,它是一个知道如何将call实例转换成其他类型的工厂类，目前支持的有：
+
+- RxJava
+- Guava
+- Java8
+
+添加的代码:
+
+```
+Retrofit retrofit =new Retrofit.Builder()
+                   .baseUrl(Constants.BASE_HTTP_URL)
+                   .addConverterFactory(GsonConverterFactory.create())
+                   .addCallAdapterFactory(RxJavaCallAdapterFactory.create());
+```
+
+#### 3) 请求的返回改为Observable<T>:
+
+```
+@GET("users")
+Observable<List<Repo>> listRepos(String user);
+```
+
+#### 4) 像Rxjava一样做一般的订阅
+
+```
+listRespos("xx").subscribeOn(Schedulers.from(Globals.THREAD_EXECUTOR))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(xx);
+```
+
+
+
+
+
+
+## Reference
+- [Retrofit Introduction](http://square.github.io/retrofit/)
+- [Retrofit](http://www.tuicool.com/articles/26jUZjv)
+- [okhttp doc](http://square.github.io/okhttp/3.x/okhttp/)
+- [快速Android开发系列网络篇之Retrofit](http://www.cnblogs.com/angeldevil/p/3757335.html)
+- [Retrofit2 完全解析 探索与okhttp之间的关系](http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2016/0504/4208.html)
+- [android快捷开发之Retrofit网络加载框架的简单使用](http://www.cnblogs.com/liushilin/p/5680135.html)
+- [Retrofit 2 之自定义Converter实现加密解密](http://blog.csdn.net/zr940326/article/details/51549310)
+- [Retrofit 2.0：有史以来最大的改进](http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2015/0915/3460.html)
+- [好用的网络请求库Retrofit2（入门及讲解）](http://m.blog.csdn.net/article/details?id=49232289)
+- [你真的会用Retrofit2吗?Retrofit2完全教程](http://www.jcodecraeer.com/a/anzhuokaifa/androidkaifa/2016/0518/4270.html)
+- [Retrofit 2.0 超能实践，完美支持Https传输](http://m.blog.csdn.net/article/details?id=51597816)
+- [我对Retrofit的认识](http://blog.fangjie.info/2016/07/14/%E6%88%91%E5%AF%B9Retrofit%E7%9A%84%E8%AE%A4%E8%AF%86/?utm_source=tuicool&amp;utm_medium=referral)
+- [Retrofit的使用与深入学习（上）](http://m.2cto.com/kf/201605/506107.html)
+- [Android Retrofit2.0 查看log和JSON字符串（HttpLoggingInterceptor）](http://m.blog.csdn.net/article/details?id=51520945)
+- [Retrofit rxjava最佳实践](http://gank.io/post/56e80c2c677659311bed9841)
+- [深入浅出 Retrofit，这么牛逼的框架你们还不来看看](http://chuansong.me/n/365421237869) ***
+- [Retrofit2.0使用总结及注意事项](http://blog.csdn.net/wbwjx/article/details/51379506)
+- [Retrofit Series Overview](https://futurestud.io/blog/retrofit-getting-started-and-android-client) 

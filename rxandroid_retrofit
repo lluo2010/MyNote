@@ -1,0 +1,76 @@
+rxandroid_retrofit
+
+## 配置
+
+### rxandroid配置
+
+由于rxandroid依赖rxjava,所以也需要引入rxjava:
+
+```
+	compile 'io.reactivex:rxandroid:1.2.1'
+	compile 'io.reactivex:rxjava:1.1.9'
+```
+
+### retrofit配置
+
+```
+	compile 'com.squareup.retrofit2:retrofit:2.1.0'
+```
+
+
+
+
+
+
+
+gson,retrofit对应:
+http://stackoverflow.com/questions/32902157/retrofit-convertor-factory-can-not-access-gsonconverterfactory
+
+
+
+
+This is the latest:
+
+compile 'com.squareup.retrofit2:retrofit:2.0.0'
+compile 'com.squareup.retrofit2:converter-gson:2.0.0'
+compile 'com.squareup.retrofit2:adapter-rxjava:2.0.0'
+
+If you use bate version:
+compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
+compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
+compile 'com.squareup.retrofit:adapter-rxjava:2.0.0-beta2'
+
+
+
+
+//----------------------------------------------------------
+get:
+- 短信获取	/user/smsCode	
+- 描述钱包销售(用户购买)记录	/platform/wallet/records/invest
+
+post:
+- 登录接口	/user/login
+
+
+
+
+
+	private final static Gson gson = new GsonBuilder().create();
+
+
+Retrofit 2 之自定义Converter实现加密解密
+http://blog.csdn.net/zr940326/article/details/51549310
+
+Retrofit2.0使用总结及注意事项
+http://blog.csdn.net/wbwjx/article/details/51379506
+
+Retrofit--合理封装回调
+http://m.blog.csdn.net/article/details?id=51726311
+
+http://stackoverflow.com/questions/27784848/getting-arraylist-by-using-retrofit
+
+
+http://www.tuicool.com/articles/uAFVJju
+
+Retrofit 2.0 超能实践，完美支持Https传输
+http://m.blog.csdn.net/article/details?id=51597816

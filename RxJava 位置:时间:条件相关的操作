@@ -1,0 +1,342 @@
+# RxJava 位置数目/时间/条件相关的操作
+
+
+
+## 位置数目相关的
+### take
+
+```
+public final Observable<T> take(final int count);
+```
+
+Returns an Observable that emits only the first {@code count} items emitted by the source Observable. If the source emits fewer than  {@code count} items then all of its items are emitted.
+
+
+### takeFirst
+
+```
+    public final Observable<T> takeFirst(Func1<? super T, Boolean> predicate);
+```
+Returns an Observable that emits only the very first item emitted by the source Observable that satisfies  a specified condition.
+
+
+### takelast
+
+```
+    public final Observable<T> takeLast(final int count);
+```
+Returns an Observable that emits at most the last {@code count} items emitted by the source Observable. If the source emits fewer than  {@code count} items then all of its items are emitted.
+
+### takeLastBuffer
+
+```
+    public final Observable<List<T>> takeLastBuffer(int count) {
+        return takeLast(count).toList();
+    }
+```
+Returns an Observable that emits a single List containing at most the last {@code count} elements emitted by the source Observable. If the source emits fewer than {@code count} items then the emitted List will contain all of the source emissions.
+
+
+
+### first
+
+```
+    public final Observable<T> first();
+```
+Returns an Observable that emits only the very first item emitted by the source Observable, or notifies  of an {@code NoSuchElementException} if the source Observable is empty.
+
+<br>
+
+```
+    public final Observable<T> first(Func1<? super T, Boolean> predicate);
+```
+Returns an Observable that emits only the very first item emitted by the source Observable that satisfies  a specified condition, or notifies of an {@code NoSuchElementException} if no such items are emitted.
+
+
+### firstorDefault
+
+```
+    public final Observable<T> firstOrDefault(T defaultValue);
+``` 
+Returns an Observable that emits only the very first item emitted by the source Observable, or a default  item if the source Observable completes without emitting anythin
+
+```
+    public final Observable<T> firstOrDefault(T defaultValue, Func1<? super T, Boolean> predicate);
+```
+Returns an Observable that emits only the very first item emitted by the source Observable that satisfies  a specified condition, or a default item if the source Observable emits no such items.
+
+
+### last
+
+```
+public final Observable<T> last();
+```
+Returns an Observable that emits the last item emitted by the source Observable or notifies observers of  a {@code NoSuchElementException} if the source Observable is empty.
+<br>
+
+```
+public final Observable<T> last(Func1<? super T, Boolean> predicate);
+```
+Returns an Observable that emits only the last item emitted by the source Observable that satisfies a given condition, or notifies of a {@code NoSuchElementException} if no such items are emitted.
+
+
+
+
+
+### lastOrDefault
+
+```
+    public final Observable<T> lastOrDefault(T defaultValue);
+```
+Returns an Observable that emits only the last item emitted by the source Observable, or a default item  if the source Observable completes without emitting any items.
+
+```
+    public final Observable<T> lastOrDefault(T defaultValue, Func1<? super T, Boolean> predicate);
+```
+Returns an Observable that emits only the last item emitted by the source Observable that satisfies a  specified condition, or a default item if no such item is emitted by the source Observable.
+
+
+
+
+### skip
+
+```
+    public final Observable<T> skip(int count);
+```
+Returns an Observable that skips the first {@code count} items emitted by the source Observable and emits  the remainder.
+
+
+### skipLast
+
+```
+    public final Observable<T> skipLast(int count);
+```
+Returns an Observable that drops a specified number of items from the end of the sequence emitted by the  source Observable.
+
+
+### elementAt
+
+```
+    public final Observable<T> elementAt(int index);
+```
+Returns an Observable that emits the single item at a specified index in a sequence of emissions from a  source Observable.
+
+### elementAtOrDefault
+
+```
+    public final Observable<T> elementAtOrDefault(int index, T defaultValue);
+```
+Returns an Observable that emits the item found at a specified index in a sequence of emissions from a  source Observable, or a default item if that index is out of range.
+
+
+
+
+
+<br>
+
+
+## 时间相关的
+
+### timer
+timer returns an Observable that emits a single number zero after a delay period you specify,and then completes. timer by default operates on the computation Scheduler, or you can override this by passing in a Scheduler as a final parameter.
+
+返回一个Observable,它延时一段时间后发送一个值(从0开始),然后完成,默认是在computation scheduler中执行的,可也以指定.
+这个仅发送一个值就结束了,如果要不停发, 使用interval.
+
+```
+    public static Observable<Long> timer(long delay, TimeUnit unit);
+    public static Observable<Long> timer(long delay, TimeUnit unit, Scheduler scheduler);
+```
+
+
+
+
+### interval
+
+create an Observable that emits a sequence of integers spaced by a given time interval. interval operates by default on the computation Scheduler.
+
+返回一个Observable, 以固定间隔持续发送一系列的值, 值从0开始递增. 默认是在computation scheduler中执行的,也可以指定. 最后一个重载版本可以指定初始的延时值.
+
+```
+    public static Observable<Long> interval(long interval, TimeUnit unit);
+    public static Observable<Long> interval(long interval, TimeUnit unit, Scheduler scheduler);
+    public static Observable<Long> interval(long initialDelay, long period, TimeUnit unit);
+    public static Observable<Long> interval(long initialDelay, long period, TimeUnit unit, Scheduler scheduler);
+
+```
+
+
+### dealy
+
+Returns an Observable that emits the items emitted by the source Observable shifted forward in time by a  specified delay. Error notifications from the source Observable are not delayed.
+
+```
+    public final Observable<T> delay(long delay, TimeUnit unit);
+    public final Observable<T> delay(long delay, TimeUnit unit, Scheduler scheduler);
+```
+
+![delay](https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/delay.png)
+
+### take
+take也有和时间有关的版本,不是获取指定个数,而是获取指定时间间隔内:
+
+```
+    public final Observable<T> take(long time, TimeUnit unit);
+    public final Observable<T> take(long time, TimeUnit unit, Scheduler scheduler);
+```
+Returns an Observable that emits those items emitted by source Observable before a specified time runs  out.
+
+
+
+### takeLast
+takeLast也有和时间有关的版本,在结束前的指定时间内:
+
+```
+    public final Observable<T> takeLast(int count, long time, TimeUnit unit);
+    public final Observable<T> takeLast(int count, long time, TimeUnit unit, Scheduler scheduler);
+```
+Returns an Observable that emits at most a specified number of items from the source Observable that were  emitted in a specified window of time before the Observable completed.
+
+![takeLast](https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.tn.png)
+
+### takeLastBuffer
+takeLastBuffer也有和时间相关的版本:
+
+```
+    public final Observable<List<T>> takeLastBuffer(int count, long time, TimeUnit unit);
+    public final Observable<List<T>> takeLastBuffer(int count, long time, TimeUnit unit, Scheduler scheduler);
+```
+Returns an Observable that emits a single List containing at most {@code count} items from the source  Observable that were emitted during a specified window of time before the source Observable completed.
+
+
+### skip
+take也有时间相关的版本,不是skip个数,而是skip时间:
+
+```
+    public final Observable<T> skip(long time, TimeUnit unit);
+```
+Returns an Observable that skips values emitted by the source Observable before a specified time window  elapses.
+![skip](https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skip.t.png)
+
+```
+    public final Observable<T> skip(long time, TimeUnit unit, Scheduler scheduler);
+```
+Returns an Observable that skips values emitted by the source Observable before a specified time window  on a specified {@link Scheduler} elapses.
+
+
+### Timeout
+Returns an Observable that mirrors the source Observable but applies a timeout policy for each emitted  item. If the next item isn't emitted within the specified timeout duration starting from its predecessor,  the resulting Observable terminates and notifies observers of a {@code TimeoutException}.
+
+
+
+Timeout操作符给Observable加上超时时间，每发射一个数据后就重置计时器，当超过预定的时间还没有发射下一个数据，就抛出一个超时的异常。
+Rxjava将Timeout实现为很多不同功能的操作符，比如说超时后用一个备用的Observable继续发射数据等。
+
+如果超时了,会被终止,Error里带上TimeoutException.如果有指定other Observable,则timeou后不会失败,而是由other Observable会接管该Observable发送item(the resulting Observable begins instead to mirror a fallback Observable.)
+这个超时时间是从每次一个item发送后重新开始计时的.
+
+```
+    public final Observable<T> timeout(long timeout, TimeUnit timeUnit);
+    public final Observable<T> timeout(long timeout, TimeUnit timeUnit, Scheduler scheduler);
+    public final Observable<T> timeout(long timeout, TimeUnit timeUnit, Observable<? extends T> other);
+    public final Observable<T> timeout(long timeout, TimeUnit timeUnit, Observable<? extends T> other, Scheduler scheduler) {
+```
+带other Observable的图如下:
+![timeout](https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.2s.png)
+
+
+### Sample
+
+Sample操作符定期扫描源Observable产生的结果，在指定的时间间隔范围内对源Observable产生的结果进行采样.
+Returns an Observable that emits the most recently emitted item (if any) emitted by the source Observable  within periodic time intervals.
+
+```
+    public final Observable<T> sample(long period, TimeUnit unit);
+    public final Observable<T> sample(long period, TimeUnit unit, Scheduler scheduler);
+    public final <U> Observable<T> sample(Observable<U> sampler);
+
+```
+前面两个的图如下:
+![sample](https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.png)
+
+最后一个xxxx 
+Returns an Observable that, when the specified {@code sampler} Observable emits an item or completes,  emits the most recently emitted item (if any) emitted by the source Observable since the previous  emission from the {@code sampler} Observable.
+这个不是根据时间间隔,而是根据指定的Sampler如果发送了一个item,然后来寻找最近的item.
+图如下:
+![sample](https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/sample.o.png)
+
+1 2 3 4 5 6 7 8 9
+
+
+### delaySubscription
+
+### throttleFirst
+    throttleFirst(1, TimeUnit.SECONDS)
+### throttleLast
+    throttleLast(1, TimeUnit.SECONDS)
+### debounce
+Returns an Observable that mirrors the source Observable, except that it drops items emitted by the  source Observable that are followed by newer items before a timeout value expires. The timer resets on  each emission.
+
+debounce操作符对源Observable每产生一个结果后，如果在规定的间隔时间内没有别的结果产生，则把这个结果提交给订阅者处理，否则忽略该结果。
+
+值得注意的是，如果源Observable产生的最后一个结果后在规定的时间间隔内调用了onCompleted，那么通过debounce操作符也会把这个结果提交给订阅者。
+
+    ```
+        public final Observable<T> debounce(long timeout, TimeUnit unit);
+        public final Observable<T> debounce(long timeout, TimeUnit unit, Scheduler scheduler);
+```
+对应的图:
+![debounce](https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.png)
+
+
+
+
+
+<br>
+## 条件相关的
+
+### takewhile
+
+```
+    public final Observable<T> takeWhile(final Func1<? super T, Boolean> predicate);
+```
+
+Returns an Observable that emits items emitted by the source Observable so long as each item satisfied a * specified condition, and then completes as soon as this condition is not satisfied.
+
+### takUntil
+一直take数据项,知道Observable other发送了item.
+
+```
+    public final <E> Observable<T> takeUntil(Observable<? extends E> other);
+```
+Returns an Observable that emits the items emitted by the source Observable until a second Observable * emits an item.
+
+![takeUntil](https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.png)
+
+
+
+### skipWhile
+
+```
+    public final Observable<T> skipWhile(Func1<? super T, Boolean> predicate);
+```
+Returns an Observable that skips all items emitted by the source Observable as long as a specified  condition holds true, but emits all further source items as soon as the condition becomes false.
+
+### skipUntil
+skip数据项一直到other发送数据项了.
+
+```
+    public final <U> Observable<T> skipUntil(Observable<U> other);
+```
+
+Returns an Observable that skips items emitted by the source Observable until a second Observable emits  an item.
+
+![skipUntil](https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/skipUntil.png)
+
+
+
+
+## Reference
+- [RxJava操作符（六）Utility ](http://blog.chinaunix.net/uid-20771867-id-5206187.html)
+- [RxJava入门实践](http://www.tuicool.com/articles/A3uY7rF)
+

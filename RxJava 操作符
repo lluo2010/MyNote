@@ -1,0 +1,243 @@
+# RxJava 操作符简介 note
+
+## RxJava 操作符
+
+
+
+###	flatMap & concatMap
+
+flatMap操作符是把Observable产生的结果转换成多个Observable,然后又直接把这些多个Observable转换单一一个Observable,并依次提交产生的结果给订阅者.
+
+concatMap操作符和flatMap操作符非常类似,但是有下面的区别:
+
+flatMap()可能交错的发送事件，最终结果的顺序可能并是不原始Observable发送时的顺序。为了防止交错的发生，可以使用与之类似的concatMap()操作符。
+contactMap与flagMap的区别是前者中间产生的observable发出的数据最后是有序的,而后者是无须的.
+
+
+
+
+### concat
+将几个Observable合并成一个Observable,返回最终的一个Observable. 而那些数据就像从一个Observable发出来一样.
+参数可以是多个Observable,也可以是包含Observalbe的Iterator.
+
+各个数据按在Observable的顺序排列, Observable在前的排在前面.
+
+如果某个Observable中有error, 则合并就停止了,可以使用concatDelayError将error放在最后一个.
+
+
+### merge
+它可以将多个Observable合并成一个Observable,返回最终的一个Observable. 而那些数据就像从一个Observable发出来一样.
+合并后的数据的顺序是和各个Observable发射的顺序有关系的.
+
+merge和contact的区别是前者和Observale在参数中的位置没关系,而contact的顺序取决于在函数参数中的位置.
+
+
+如果某个Observable中有error, 则合并就停止了,可以使用mergeDelayError将error放在最后一个.
+
+子弹图如下:
+![mergeDelayError](https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png)
+
+
+### startWith
+是一个非静态函数, 在本Observable前添加一个或者数个Observable.和concat的差别是它是在指定observable前添加.
+看下面实现就知道了:
+
+```
+public final Observable<T> startWith(Observable<T> values) {
+        return concat(values, this);
+    }
+
+public final Observable<T> startWith(Iterable<T> values) {
+        return concat(Observable.<T> from(values), this);
+    }
+```
+
+
+### zip
+zip操作符将多个Observable发射的数据按顺序组合起来，每个数据只能组合一次，而且都是有序的。最终组合的数据的数量由发射数据最少的Observable来决定。
+
+子弹图:
+![zip](https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png)
+
+
+### zipWith
+和zip功能相同,只不过zip是静态函数,而zipWith不是,它将本身和它的参数里的数个observable一起依据给定的函数进行组合.
+
+zip或者zip有时候也可以起到delay作用,以为只有另一个元素释放了才可以组合.
+
+
+### buffer
+
+buffer操作符周期性地收集源Observable产生的结果到列表中，并把这个列表提交给订阅者，订阅者处理后，清空buffer列表，同时接收下一次收集的结果并提交给订阅者，周而复始。
+其实就是将一个个的数据合并成一个个的list. 合并的时机是根据指定的时间,或者是另一个Observalbe发送数据时候的信号.
+
+
+### debounce
+
+debounce操作符对源Observable每产生一个结果后，如果在规定的间隔时间内没有别的结果产生，则把这个结果提交给订阅者处理，否则忽略该结果。就是一个数据发射后,指定时间内没有其他数据发射,该数据就拿过来了.
+
+
+值得注意的是，如果源Observable产生的最后一个结果后在规定的时间间隔内调用了onCompleted，那么通过debounce操作符也会把这个结果提交给订阅者。
+
+
+子弹图:
+![debounce](https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/debounce.png)
+
+
+### combineLatest
+
+根据输入的几个Observable,以及一个合并函数,产生另外一个Observable,规则如下:
+
+when an item is emitted by either of two Observables, combine the latest item emitted by each Observable via a specified function and emit items based on the results of this function
+
+当两个Observables中的任何一个发射了数据时，使用一个函数结合每个Observable发射的最近数据项，并且基于这个函数的结果发射数据。
+
+也就是始终使用最近发射数据的Observable中的那个数据和另一个Observable中的最后一个数据根据指定函数执行操作.
+
+子弹图:
+![combineLatest](https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/combineLatest.png)
+
+
+### timeout
+不仅是onNext,如果onCompleted没下规定时间内发送也是timeout的.
+
+
+
+### defer
+
+public static <T> Observable<T> defer(Func0<Observable<T>> observableFactory)
+
+defer 操作符与create、just、from等操作符一样，是创建类操作符.
+不过其他的数据都是在调用的时候就存储了, 而defer是在订阅是才生效的。
+
+just() , from() , and other Observable creation tools store the value of data when created, not when subscribed. 
+
+Returns an Observable that calls an Observable factory to create an Observable for each new Observer that subscribes. That is, for each subscriber, the actual Observable that subscriber observes is determined by the factory function.
+
+从源码看, 不管是Observable.create还是Observable.defer, 都会先创建一个Observable, 其实defer里面也是调用create.
+
+不同的是defer的OnSubscribe是OnSubscribeDefer,在它的call里面会根据Func0在创建一个Observable,也就是说,在subscribe的时候,onSubscribeDefer.call被调用,在call里面,根据传进来的Func0,再创建一个Observable,即Func0里的Observable是在订阅(subscribe)的时候创建的.
+
+
+### cast
+cast操作符类似于map操作符，不同的地方在于map操作符可以通过自定义规则，把一个值A1变成另一个值A2，A1和A2的类型可以一样也可以不一样；而cast操作符主要是做类型转换的，传入参数为类型class，如果源Observable产生的结果不能转成指定的class，则会抛出ClassCastException运行时异常。
+
+可以理解为map的原数据和转换后的数据之间的类型可以没有任何关系, 而cast中这两种类型必须是可以转化的,否则会抛异常.
+
+例子如下:
+
+```
+Observable.just(1,2,3,4,5,6).cast(Integer.class).subscribe(new Action1<Integer>() {
+            @Override
+            public void call(Integer value) {
+                System.out.println("next:"+value);
+            }
+        });
+```
+
+### scan
+
+public final Observable<T> scan(Func2<T, T, T> accumulator);
+
+scan操作符通过遍历源Observable产生的结果，依次对每一个结果项按照指定规则进行运算，计算后的结果作为下一个迭代项的第一个参数，每一次迭代项都会把计算结果输出给订阅者。
+
+
+子弹图:
+![scan](https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/scan.png)
+
+
+例子:
+
+```
+Observable.just(1, 2, 3, 4, 5)
+    .scan(new Func2<Integer, Integer, Integer>() {
+        @Override
+        public Integer call(Integer sum, Integer item) {
+            //参数sum就是上一次的计算结果
+            return sum + item;
+        }
+    }).subscribe(new Subscriber<Integer>() {
+        @Override
+        public void onNext(Integer item) {
+            System.out.println("Next: " + item);
+        }
+
+        @Override
+        public void onError(Throwable error) {
+            System.err.println("Error: " + error.getMessage());
+        }
+
+        @Override
+        public void onCompleted() {
+            System.out.println("Sequence complete.");
+        }
+    });
+```
+
+结果:
+
+```
+Next: 1 
+Next: 3 
+Next: 6 
+Next: 10 
+Next: 15 
+Sequence complete.
+```
+
+
+### compose
+
+public Observable compose(Transformer<? super T, ? extends R> transformer);
+
+Transform an Observable by applying a particular Transformer function to it.
+将一种类型的Observable转变为另一种类型的Observable.
+
+Transformer接口
+ public interface Transformer<T, R> extends Func1<Observable, Observable>;
+输入是一个Observable,返回值是另一个Observable.
+
+有时候我们希望不打断链结构, 这时候可以使用compose.
+
+
+## 其他
+
+### SerializedSubject
+
+public class SerializedSubject<T,R> extends Subject<T,R>
+
+Wraps a Subject so that it is safe to call its various on methods from different threads.
+
+When you use an ordinary Subject as a Subscriber, you must take care not to call its Observer.onNext(T) method (or its other on methods) from multiple threads, as this could lead to non-serialized calls, which violates the Observable contract and creates an ambiguity in the resulting Subject.
+
+To protect a Subject from this danger, you can convert it into a SerializedSubject with code like the following:
+
+	mySafeSubject = new SerializedSubject( myUnsafeSubject );
+
+
+### CompositeSubscription
+
+public final class CompositeSubscription extends java.lang.Object implements Subscription
+
+Subscription that represents a group of Subscriptions that are unsubscribed together. All methods of this class are thread-safe.
+
+提供了添加,删除(add,addAll,remove,clear),以及unsubscribe接口. add,clear时候包含了subscribe和unsubscirbe动作.
+
+
+
+
+## Reference
+1. [Android RxJava使用介绍（三） RxJava的操作符](http://blog.csdn.net/Job_Hesc/article/details/46495281)
+1. [RxJava 合并组合两个（或多个）Observable数据源](http://www.2cto.com/kf/201609/544829.html)
+
+
+
+
+
+
+
+https://github.com/rmtheis/tess-two
+http://opencv.org/
+
+
+backpressure

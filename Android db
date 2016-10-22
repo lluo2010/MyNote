@@ -1,0 +1,59 @@
+Android db
+
+Android 数据库操作封装，简化操作
+http://victor-liao.iteye.com/blog/1624796
+
+
+
+
+Android 封装的数据库管理操作类
+http://www.open-open.com/lib/view/open1355237655523.html
+
+
+Android中个人推崇的数据库使用方式
+http://my.oschina.net/sammy1990/blog/331998
+
+
+看
+OptimizationReportChange
+
+
+08-31 11:01:08.062 27494-28289/com.example.lluo.testdb I/StoneDBHelper: ----CREATE TABLE MessageCenter(id INTEGER PRIMARY KEY,msg_id INTEGER,msg_type INTEGER,msg_read_status INTEGER,)
+
+
+08-31 11:01:08.062 27494-28289/com.example.lluo.testdb I/StoneDBHelper: ----CREATE TABLE MessageCenter(id INTEGER PRIMARY KEY,msg_id INTEGER,msg_type INTEGER,msg_read_status INTEGER,)
+
+08-31 11:01:08.062 27494-28289/com.example.lluo.testdb I/StoneDBHelper: ----CREATE TABLE MessageCenter(id INTEGER PRIMARY KEY,msg_id INTEGER,msg_type INTEGER,msg_read_status INTEGER,)
+08-31 11:03:53.695 31464-31732/com.example.lluo.testdb I/StoneDBHelper: ----CREATE TABLE MessageCenter(id INTEGER PRIMARY KEY,msg_id INTEGER,msg_type INTEGER,msg_read_status INTEGER)
+
+
+
+StoneDBHelper.getInstance().getmMessageCenterDBManager().insertPersonalRecord(i,MessageCenterDBManager.READ_STATUS_UNREAD);
+int status = StoneDBHelper.getInstance().getmMessageCenterDBManager().queryPersonalMessageStatus(queryMsgId);
+StoneDBHelper.getInstance().getmMessageCenterDBManager().updatePersonalMessage2ReadStatus(msgId);
+
+
+
+//更新成已读
+    public void updatePersonalMessage2ReadStatus(int nMsgID){
+
+    //更新成未读
+    public void updatePersonalMessage2UnReadStatus(int nMsgID){
+
+
+    //查询系统消息状态
+    public int querySystemMessageStatus(int msgID){
+
+    //查询个人消息状态
+    public int queryPersonalMessageStatus(int msgID){
+
+
+
+
+
+ //个人消息已读数目
+    public int queryPersonalReadedMessageCount() {
+    //系统消息已读数目
+    public int querySystemReadedMessageCount() {
+    //所有记录变为可读
+    public void resetAll2Read() {

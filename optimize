@@ -1,0 +1,201 @@
+
+
+
+ 自定义事件的统计
+http://dev.umeng.com/analytics/android-doc/integration#3
+
+
+为了寻找内存的性能问题，Android Studio提供了工具来帮助开发者:
+
+- Memory Monitor：查看整个app所占用的内存，以及发生GC的时刻，短时间内发生大量的GC操作是一个危险的信号。
+- Allocation Tracker：使用此工具来追踪内存的分配，前面有提到过。
+- Heap Tool：查看当前内存快照，可以看到当前进程中的Heap Size的情况，分别有哪些类型的数据，占比是多少,便于对比分析哪些对象有可能是泄漏了的.
+- TraceView-"start method profiling"/"stop method profiling":TraceView 是 Android 平台配备一个很好的性能分析的工具。它可以通过图形化的方式让我们了解我们要跟踪的程序的性能，并且能具体到method,即能知道每个方法的执行时间.
+
+前三个都是内存相关的.
+
+什么是Memory Churn内存抖动
+
+Memory Churn内存抖动，内存抖动是因为在短时间内大量的对象被创建又马上被释放。瞬间产生大量的对象会严重占用Young Generation的内存区域，当达到阀值，剩余空间不够的时候，会触发GC从而导致刚产生的对象又很快被回收。即使每次分配的对象占用了很少的内存，但是他们叠加在一起会增加Heap的压力，从而触发更多其他类型的GC。这个操作有可能会影响到帧率，并使得用户感知到性能问题。
+
+
+
+## 电量相关
+
+### 各种行为耗电情况
+![各种行为耗电情况](http://hukai.me/images/battery_drain_radio.png)
+
+
+### 获取电量消耗
+
+Battery Historian是Android 5.0开始引入的新API。通过下面的指令，可以得到设备上的电量消耗信息：
+
+```
+	$ adb shell dumpsys batterystats > xxx.txt  //得到整个设备的电量消耗信息
+	$ adb shell dumpsys batterystats > com.package.name > xxx.txt //得到指定app相关的电量消耗信息
+```
+
+得到了原始的电量消耗数据之后，我们需要通过Google编写的一个python脚本把数据信息转换成可读性更好的html文件:
+
+```
+$ python historian.py xxx.txt > xxx.html
+
+
+### 获取手机的当前充电状态
+
+可以通过下面的代码来获取手机的当前充电状态：
+
+```
+// It is very easy to subscribe to changes to the battery state, but you can get the current
+// state by simply passing null in as your receiver.  Nifty, isn't that?
+IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+Intent batteryStatus = this.registerReceiver(null, filter);
+int chargePlug = batteryStatus.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
+boolean acCharge = (chargePlug == BatteryManager.BATTERY_PLUGGED_AC);
+if (acCharge) {
+    Log.v(LOG_TAG,“The phone is charging!”);
+}
+
+```
+
+我们可以判断只有当前手机为AC充电状态时 才去执行一些非常耗电的操作。
+
+
+### Wakelock和耗电(Wakelock and Battery Drain)
+
+不恰当的使用WakeLock会导致严重错误。例如网络请求的数据返回时间不确定，导致本来只需要10s的事情一直等待了1个小时，这样会使得电量白白浪费了。这也是为何使用带超时参数的wakelock.acquice()方法是很关键的。
+
+也可以使用AlarmManager或者JobScheduler API.
+
+
+### 网络和耗电(Network and Battery Drain)
+
+为了减少电量的消耗，在蜂窝移动网络下，最好做到批量执行网络请求，尽量避免频繁的间隔网络请求。
+
+
+/Users/lluo2010/project/OptimizeTest/captures/com.example.lluo.optimizetest_2016.10.18_11.39.hprof
+
+
+Android性能优化典范 - 第1季
+http://hukai.me/android-performance-patterns/
+
+Android性能优化之运算篇
+http://hukai.me/android-performance-compute/
+
+Android性能优化之渲染篇
+http://hukai.me/android-performance-render/
+
+Android性能优化之内存篇
+http://hukai.me/android-performance-memory/
+
+Android性能优化之电量篇
+http://hukai.me/android-performance-battery/
+
+Android性能优化典范 - 第2季
+http://hukai.me/android-performance-patterns-season-2/
+
+Android性能优化典范 - 第3季
+http://hukai.me/android-performance-patterns-season-3/
+
+Android性能优化典范 - 第4季
+http://hukai.me/android-performance-patterns-season-4/
+
+Android性能优化典范 - 第5季
+http://hukai.me/android-performance-patterns-season-5/
+
+Android性能优化典范 - 第6季
+http://hukai.me/android-performance-patterns-season-6/
+
+''
+
+
+# Android JobScheduler
+
+## 概述
+Android 5.0 提供了一个新的 JobScheduler API，它允许您通过为系统定义要在以后的某个时间或在指定的条件下（例如，当设备在充电时）异步运行的作业来优化电池寿命。
+
+>This is an API for scheduling various types of jobs against the framework that will be executed in your application's own process.
+
+See JobInfo for more description of the types of jobs that can be run and how to construct them. You will construct these JobInfo objects and pass them to the JobScheduler with schedule(JobInfo). When the criteria declared are met, the system will execute this job on your application's JobService. You identify which JobService is meant to execute the logic for your job when you create the JobInfo with JobInfo.Builder(int, android.content.ComponentName).
+
+作业调度在下列情况下非常有用：
+- 应用具有您可以推迟的非面向用户的工作。
+- 应用具有当插入设备时您希望优先执行的工作。
+- 应用具有需要访问网络或 Wi-Fi 连接的任务。
+- 应用具有您希望作为一个批次定期运行的许多任务。
+- 工作单元由一个 JobInfo 对象进行封装。此对象指定了调度条件。
+
+
+
+
+## JobScheduler
+
+This is an API for scheduling various types of jobs against the framework that will be executed in your application's own process.
+
+用来Scheduler jobInfo,以及取消或者获取未执行的jobInfo列表.
+
+JobScheduler获取:
+
+JobScheduler scheduler=(JobScheduler)this.getSystemService(Context.JOB_SCHEDULER_SERVICE);  
+
+## JobService
+>Entry point for the callback from the JobScheduler.
+
+This is the base class that handles asynchronous requests that were previously scheduled. You are responsible for overriding onStartJob(JobParameters), which is where you will implement your job logic.
+
+This service executes each incoming job on a Handler running on your application's main thread. This means that you must offload your execution logic to another thread/handler/AsyncTask of your choosing. Not doing so will result in blocking any future callbacks from the JobManager - specifically onStopJob(android.app.job.JobParameters), which is meant to inform you that the scheduling requirements are no longer being met.
+
+JobScheduler Scheduler起来的任务最终的入口. 我们需要重写onStartJob(JobParameters)来执行我们自己的任务.
+
+默认这个service是在主线程中进行的, 所以如果任务重,需要另起线程(用thread/handler/AsyncTask等).
+
+
+## JobInfo
+
+Container of data passed to the JobScheduler fully encapsulating the parameters required to schedule work against the calling application. These are constructed using the JobInfo.Builder. You must specify at least one sort of constraint on the JobInfo object that you are creating. The goal here is to provide the scheduler with high-level semantics about the work you want to accomplish. Doing otherwise with throw an exception in your app.
+
+JobInfo包含了一些信息, 这些信息会传到JobScheduler里.
+
+构造函数如下:
+JobInfo.Builder(int jobId, ComponentName jobService)
+
+参数解释如下:
+
+参数|描述
+:--|--
+jobId|Application-provided id for this job. Subsequent calls to cancel, or jobs created with the same jobId, will update the pre-existing job with the same id. This ID must be unique across all clients of the same uid (not just the same package). You will want to make sure this is a stable id across app updates, so probably not based on a resource ID.
+jobService	ComponentName| The endpoint that you implement that will receive the callback from the JobScheduler.
+
+jobID表示任务的id, 最终可以从JobParameters.getJobId()获取.
+
+## JobParameters
+>Contains the parameters used to configure/identify your job. You do not create this object yourself, instead it is handed in to your application by the System.
+
+包含在JobInfo里, 在JobService的onStartJob (JobParameters params)里传进来,可以在这里识别是什么任务.
+
+
+## JobInfo.Builder
+>Builder class for constructing JobInfo objects.
+
+用来构建JobInfo, 任务的各种执行条件也是这里设置的.
+
+
+
+总结:
+1. JobInfo通过JobInfo.Builder构建, 在Builder里指定Job执行的条件, JobInfo的表示ID也是通过Builder传进去的.
+1. JobInfo任务的启动是通过JobScheduler发起的.
+1. JobService负责任务的执行, 一般通过重新实现onStartJob(JobParameters).
+1. JobService通过JobParameters.getJobId()识别出是哪个任务的.
+1. JobService是通过getSystemService(Context.JOB_SCHEDULER_SERVICE)获取的.
+1. JobInfo是通过ComponentName和JobService关联的,ComponentName构造如下:
+
+```
+ComponentName mServiceComponent = new ComponentName(this, TestJobService.class);  
+```
+
+1. 通过JobScheduler API，它允许您通过为系统定义要在以后的某个时间或在指定的条件下（例如，当设备在充电时）异步运行的作业来优化电池寿命。
+
+
+
+
+

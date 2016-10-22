@@ -1,0 +1,92 @@
+
+
+
+第1条：使用一套资源
+
+这是最基本的一条规则，但非常重要。
+
+对于绝大对数APP来说，只需要取一套设计图就足够了。鉴于现在分辨率的趋势，建议取720p的资源，放到xhdpi目录。相对于多套资源，只使用720P的一套资源，在视觉上差别不大
+
+
+
+第2条:打包时忽略无用资源
+
+　　我们在打包的时候默认会把没有用到的资源（比如图片）也打包成app，徒增了应用的大小。现在我们可以利用Gradle来优雅的去除没有用到的资源文件了！
+
+就是在gradle中配置shrinkResources true。这个东西依赖于minifyEnabled，所以minifyEnabled也要为true才行。
+
+minifyEnabled主要用来控制是否运行混淆的.
+
+
+官方推荐在正式版中这么写：
+
+android {
+        buildTypes {
+            release {
+                minifyEnabled true
+                shrinkResources true
+            }
+        }
+    }
+
+如果你觉得debug包也太大，可以按照下面的方式写：
+
+buildTypes {
+        debug {
+            minifyEnabled true
+            shrinkResources true
+        }
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+使用了上面后我们发现没有用的类还是包含进去了.比如用了lib，lib里有很多很多类，你可能就用到了一个类，但却把lib中的所有类都打包了进去，很不合理。
+混淆可以解决这个问题,只是混淆又是一个耗时的操作，还是没有彻底解决打包慢的问题。
+
+
+
+//------------
+
+
+
+Reference:
+
+Shrink Your Code and Resources
+https://developer.android.com/studio/build/shrink-code.html
+
+APK瘦身记，如何实现高达53%的压缩效果
+http://jaq.alibaba.com/community/art/show?articleid=219&hmsr=toutiao.io&utm_medium=toutiao.io&utm_source=toutiao.io
+
+
+APK瘦身实践
+http://jayfeng.com/2015/12/29/APK%E7%98%A6%E8%BA%AB%E5%AE%9E%E8%B7%B5/?spm=a313e.7916648.0.0.zP80RD
+
+Android APP终极瘦身指南
+http://jayfeng.com/2016/03/01/Android-APP%E7%BB%88%E6%9E%81%E7%98%A6%E8%BA%AB%E6%8C%87%E5%8D%97/?spm=a313e.7916648.0.0.zP80RD
+
+Android Studio利用Gradle删除没有使用到的资源和代码文件
+http://www.cnblogs.com/tianzhijiexian/p/4457763.html
+
+
+-dontwarn android.webkit.WebView
+
+
+-keep public class android.webkit.**
+
+
+-dontnote
+
+
+-keepattributes EnclosingMethod, InnerClasses 
+
+
+-keep class org.restlet.** { *; }
+-dontwarn org.restlet.**
+-dontnote org.restlet.**
+
+
+如何将apk大小减少6M的
+http://blog.csdn.net/UsherFor/article/details/46827587?spm=a313e.7916648.0.0.zP80RD

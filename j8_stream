@@ -1,0 +1,269 @@
+88763685
+
+
+
+
+这是一个可以为null的容器对象。
+
+
+Stream
+
+Java 8 中的 Stream 是对集合（Collection）对象功能的增强，它专注于对集合对象进行各种非常便利、高效的聚合操作（aggregate operation），或者大批量数据操作 (bulk data operation)。Stream API 借助于同样新出现的 Lambda 表达式，极大的提高编程效率和程序可读性。同时它提供串行和并行两种模式进行汇聚操作，并发模式能够充分利用多核处理器的优势.
+Stream 不是集合元素，它不是数据结构并不保存数据，它是有关算法和计算的，它更像一个高级版本的 Iterator。
+Stream 就如同一个迭代器（Iterator），单向，不可往复，数据只能遍历一次，遍历过一次后即用尽了，就好比流水从面前流过，一去不复返。
+而和迭代器又不同的是，Stream 可以并行化操作，迭代器只能命令式地、串行化操作。顾名思义，当使用串行方式去遍历时，每个 item 读完后再读下一个 item。而使用并行去遍历时，数据会被分成多个段，其中每一个都在不同的线程中处理，然后将结果一起输出。Stream 的并行操作依赖于 Java7 中引入的 Fork/Join 框架（JSR166y）来拆分任务和加速处理过程。
+Stream 的另外一大特点是，数据源本身可以是无限的。
+
+
+流的构成
+当我们使用一个流的时候，通常包括三个基本步骤：
+获取一个数据源（source）→ 数据转换→执行操作获取想要的结果，每次转换原有 Stream 对象不改变，返回一个新的 Stream 对象（可以有多次转换），这就允许对其操作可以像链条一样排列，变成一个管道，如下图所示。
+xxxxxx图------------
+
+简单说，对 Stream 的使用就是实现一个 filter-map-reduce 过程，产生一个最终结果，或者导致一个副作用（side effect）。
+
+有多种方式生成 Stream Source：
+1.从 Collection 和数组
+	Collection.stream()
+	Collection.parallelStream()
+	Arrays.stream(T array) or Stream.of()
+2.从 BufferedReader
+	java.io.BufferedReader.lines()
+3.静态工厂
+	java.util.stream.IntStream.range()
+	java.nio.file.Files.walk()
+4.自己构建
+	java.util.Spliterator
+5.其它
+	Random.ints()
+	BitSet.stream()
+	Pattern.splitAsStream(java.lang.CharSequence)
+	JarFile.stream()
+
+
+流的操作类型分为两种：
+Intermediate(中间)：
+	一个流可以后面跟随零个或多个 intermediate 操作。其目的主要是打开流，做出某种程度的数据映射/过滤，然后返回一个新的流，交给下一个操作使用。这类操作都是惰性化的（lazy），就是说，仅仅调用到这类方法，并没有真正开始流的遍历。
+Terminal
+	一个流只能有一个 terminal 操作，当这个操作执行后，流就被使用“光”了，无法再被操作。所以这必定是流的最后一个操作。Terminal 操作的执行，才会真正开始流的遍历，并且会生成一个结果，或者一个 side effect。
+
+
+简单说，对 Stream 的使用就是实现一个 filter-map-reduce 过程，产生一个最终结果，或者导致一个副作用（side effect）。
+
+
+详解
+1.流的构造
+常用的几种构造方法
+1.Collection.stream() or Collection.parallelStream()
+比如:
+	List<String> list = Arrays.asList(strArray);
+	stream = list.stream();
+
+2.Arrays.stream(T array)
+	String [] strArray = new String[] {"a", "b", "c"};
+	stream = Arrays.stream(strArray);
+
+3.Stream.of()
+	// 1. Individual values
+	Stream stream = Stream.of("a", "b", "c");
+	//array
+	String [] strArray = new String[] {"a", "b", "c"};
+	stream = Stream.of(strArray);
+4.从BaseStream<XX,XXStream>派生的数值流(IntStream,DoubleStream,LongStream)的构造
+	IntStream.of(new int[]{1, 2, 3}).forEach(System.out::println);
+	IntStream.range(1, 3).forEach(System.out::println);
+	IntStream.rangeClosed(1, 3).forEach(System.out::println);
+
+对于基本数值型，目前有三种对应的包装类型 Stream：
+IntStream、LongStream、DoubleStream。当然我们也可以用 Stream<Integer>、Stream<Long> >、Stream<Double>，但是 boxing 和 unboxing 会很耗时，所以特别为这三种基本数值型提供了对应的 Stream。
+
+
+2.流转换为其它数据结构
+1) Array
+	String[] strArray1 = stream.toArray(String[]::new);
+2) Collection
+	List<String> list1 = stream.collect(Collectors.toList());
+	Set set1 = stream.collect(Collectors.toSet());
+	List<String> list2 = stream.collect(Collectors.toCollection(ArrayList::new));
+	Stack stack1 = stream.collect(Collectors.toCollection(Stack::new));
+3) String
+	String str = stream.collect(Collectors.joining()).toString();
+
+一个 Stream 只可以使用一次，上面的代码为了简洁而重复使用了数次。
+
+3.流的操作
+常见的操作可以归类如下。
+1) Intermediate(中间状态)
+	map (mapToInt, flatMap 等)、 filter、 distinct、 sorted、 peek、 limit、 skip、 parallel、 sequential、 unordered
+2) Terminal(最终):
+	forEach、 forEachOrdered、 toArray、 reduce、 collect、 min、 max、 count、 anyMatch、 allMatch、 noneMatch、 findFirst、 findAny、 iterator
+3) Short-circuiting：
+	anyMatch、 allMatch、 noneMatch、 findFirst、 findAny、 limit
+
+4.操作详解:
+1)map/flatMap
+<R> Stream<R> map(Function<? super T,? extends R> mapper)
+	Returns a stream consisting of the results of applying the given function to the elements of this stream.
+使用stream中的元素作为输入,返回值作为新的stream的元素.是一对一的关系.
+	List<Integer> nums = Arrays.asList(1, 2, 3, 4);
+	List<Integer> squareNums = nums.stream().
+	map(n -> n * n).
+	collect(Collectors.toList());
+另外有针对Int, Long,Double的mapToInt, mapToLong,mapToDouble.
+
+<R> Stream<R> flatMap(Function<? super T,? extends Stream<? extends R>> mapper)
+flatMap是一个一对多的关系.
+	Stream<List<Integer>> inputStream = Stream.of(
+	 Arrays.asList(1),
+	 Arrays.asList(2, 3),
+	 Arrays.asList(4, 5, 6)
+	 );
+	Stream<Integer> outputStream = inputStream.flatMap((childList) -> childList.stream());
+flatMap 把 input Stream 中的层级结构扁平化，就是将最底层元素抽出来放到一起，最终 output 的新 Stream 里面已经没有 List 了，都是直接的数字。
+
+
+2) filter
+Stream<T>	filter(Predicate<? super T> predicate)
+	filter 对原始 Stream 进行某项测试，通过测试的元素被留下来生成一个新 Stream。
+例:
+	Integer[] sixNums = {1, 2, 3, 4, 5, 6};
+	Integer[] evens =
+	Stream.of(sixNums).filter(n -> n%2 == 0).toArray(Integer[]::new);
+
+3)forEach
+void forEach(Consumer<? super T> action)
+	Performs an action for each element of this stream.
+	forEach 方法接收一个Consumer函数，然后在 Stream 的每一个元素上执行该表达式。
+例:
+	roster.stream()
+	 .filter(p -> p.getGender() == Person.Sex.MALE)
+	 .forEach(p -> System.out.println(p.getName()));
+一般认为，forEach 和常规 for 循环的差异不涉及到性能，它们仅仅是函数式风格与传统 Java 风格的差别。
+peek也具有相同的功能,不同是forEach返回值是void,是一个terminal操作, 而peek返回的是stream,它是一个中间操作.
+比如:
+	Stream.of("one", "two", "three", "four")
+	 .filter(e -> e.length() > 3)
+	 .peek(e -> System.out.println("Filtered value: " + e))
+	 .map(String::toUpperCase)
+	 .peek(e -> System.out.println("Mapped value: " + e))
+	 .collect(Collectors.toList());
+
+4) findFirst
+Optional<T> findFirst()
+	这是一个 termimal 兼 short-circuiting 操作，它总是返回 Stream 的第一个元素，或者空。返回值为Optional.
+
+
+5) reduce
+Optional<T>	reduce(BinaryOperator<T> accumulator)
+T	reduce(T identity, BinaryOperator<T> accumulator)
+这个方法的主要作用是把Stream元素组合起来。它提供一个起始值（种子），然后依照运算规则（BinaryOperator），和前面 Stream 的第一个、第二个、第 n 个元素组合。
+从这个意义上说，字符串拼接、数值的 sum、min、max、average 都是特殊的 reduce。例如 Stream 的 sum 就相当于
+	Integer sum = integers.reduce(0, (a, b) -> a+b); 
+	或
+	Integer sum = integers.reduce(0, Integer::sum);
+例:
+	// 字符串连接，concat = "ABCD"
+	String concat = Stream.of("A", "B", "C", "D").reduce("", String::concat); 
+	// 求最小值，minValue = -3.0
+	double minValue = Stream.of(-1.5, 1.0, -3.0, -2.0).reduce(Double.MAX_VALUE, Double::min); 
+	// 求和，sumValue = 10, 有起始值
+	int sumValue = Stream.of(1, 2, 3, 4).reduce(0, Integer::sum);
+	// 求和，sumValue = 10, 无起始值
+	sumValue = Stream.of(1, 2, 3, 4).reduce(Integer::sum).get();
+
+6) limit/skip
+limit 返回 Stream 的前面 n 个元素；skip 则是扔掉前 n 个元素（它是由一个叫 subStream 的方法改名而来）。
+对于Stream<T> skip(long n),如果总数目少于n,则返回empty stream.
+例:
+	map(Person::getName).limit(10).skip(3).collect(Collectors.toList());
+
+7) sorted
+Stream<T>	sorted()
+Stream<T>	sorted(Comparator<? super T> comparator)
+	对 Stream 的排序通过 sorted 进行，它比数组的排序更强之处在于你可以首先对 Stream 进行各类 map、filter、limit、skip 甚至 distinct 来减少元素数量后，再排序，这能帮助程序明显缩短执行时间。
+8)min/max/distinct
+min 和 max 的功能也可以通过对 Stream 元素先排序，再 findFirst 来实现，但前者的性能会更好，为 O(n)，而 sorted 的成本是 O(n log n)。同时它们作为特殊的 reduce 方法被独立出来也是因为求最大最小值是很常见的操作。
+min,max是个terminal,而distinct是个中间态.
+下面找出全文的单词，转小写，并排序:
+	List<String> words = br.lines().
+	 flatMap(line -> Stream.of(line.split(" "))).
+	 filter(word -> word.length() > 0).
+	 map(String::toLowerCase).
+	 distinct().
+	 sorted().
+	 collect(Collectors.toList());
+	br.close();
+	System.out.println(words);
+
+9) Match
+Stream 有三个 match 方法，从语义上说：
+	allMatch：Stream 中全部元素符合传入的 predicate，返回 true
+	anyMatch：Stream 中只要有一个元素符合传入的 predicate，返回 true
+	noneMatch：Stream 中没有一个元素符合传入的 predicate，返回 true
+例:
+	List<Person> persons = new ArrayList();
+	persons.add(new Person(1, "name" + 1, 10));
+	persons.add(new Person(2, "name" + 2, 21));
+	persons.add(new Person(3, "name" + 3, 34));
+	persons.add(new Person(4, "name" + 4, 6));
+	persons.add(new Person(5, "name" + 5, 55));
+	boolean isAllAdult = persons.stream().
+	 allMatch(p -> p.getAge() > 18);
+	System.out.println("All are adult? " + isAllAdult);
+	boolean isThereAnyChild = persons.stream().
+	 anyMatch(p -> p.getAge() < 12);
+	System.out.println("Any child? " + isThereAnyChild);
+
+
+5.自己生成流
+1) Stream.generate
+static <T> Stream<T> generate(Supplier<T> s)
+通过实现 Supplier 接口，你可以自己来控制流的生成。这种情形通常用于随机数、常量的 Stream，或者需要前后元素间维持着某种状态信息的 Stream。把 Supplier 实例传递给 Stream.generate() 生成的 Stream，默认是串行（相对 parallel 而言）但无序的（相对 ordered 而言）。
+例:
+	//生成 10 个随机整数
+	Random seed = new Random();
+	Supplier<Integer> random = seed::nextInt;
+	Stream.generate(random).limit(10).forEach(System.out::println);
+	//Another way
+	IntStream.generate(() -> (int) (System.nanoTime() % 100)).
+	limit(10).forEach(System.out::println);
+2) Stream.iterate
+xxxxxxxx
+
+三.用Collectors来进行reduction操作
+	java.util.stream.Collectors 类的主要作用就是辅助进行各类有用的 reduction 操作，例如转变输出为 Collection，把 Stream 元素进行归组。
+1.groupingBy/partitioningBy
+例:
+	//按照年龄归组
+	Map<Integer, List<Person>> personGroups = Stream.generate(new PersonSupplier()).
+	 limit(100).
+	 collect(Collectors.groupingBy(Person::getAge));
+	Iterator it = personGroups.entrySet().iterator();
+	while (it.hasNext()) {
+	 Map.Entry<Integer, List<Person>> persons = (Map.Entry) it.next();
+	 System.out.println("Age " + persons.getKey() + " = " + persons.getValue().size());
+	}
+	上面的 code，首先生成 100 人的信息，然后按照年龄归组，相同年龄的人放到同一个 list 中
+
+
+十. Reference:
+1.Java 8 中的 Streams API 详解
+	http://www.ibm.com/developerworks/cn/java/j-lo-java8streamapi/index.html
+
+
+
+boolean	isPresent()
+void	ifPresent(Consumer<? super T> consumer)
+
+
+Collector
+
+
+
+String text;
+Optional.ofNullable(text).ifPresent(System.out::println);
+等同于:
+	String text;
+	if (text!=null){
+		System.out.println(text);
+	}

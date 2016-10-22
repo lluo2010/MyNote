@@ -1,0 +1,56 @@
+LoaderManager Loader
+
+
+
+
+
+页面创建:
+10-02 18:01:11.615 19765-19765/com.example.lluo.loadermanagerstudy I/LoaderActivity: ----activity onCreate
+10-02 18:01:11.705 19765-19765/com.example.lluo.loadermanagerstudy I/LoaderActivity: ----onCreateLoader
+10-02 18:01:11.710 19765-19765/com.example.lluo.loadermanagerstudy I/loaderTest: ----MyLoader()
+10-02 18:01:11.710 19765-19765/com.example.lluo.loadermanagerstudy I/LoaderActivity: ----activity onStart
+10-02 18:01:11.710 19765-19765/com.example.lluo.loadermanagerstudy I/loaderTest: ----onStartLoading
+10-02 18:01:11.710 19765-19765/com.example.lluo.loadermanagerstudy I/loaderTest: ----onCancelLoad
+10-02 18:01:11.715 19765-20671/com.example.lluo.loadermanagerstudy I/loaderTest: ----loadInBackground
+10-02 18:01:11.875 19765-19765/com.example.lluo.loadermanagerstudy I/loaderTest: ----deliverResult
+10-02 18:01:11.875 19765-19765/com.example.lluo.loadermanagerstudy I/LoaderActivity: ----onLoadFinished
+
+页面退出:
+10-02 18:03:07.735 19765-19765/com.example.lluo.loadermanagerstudy I/loaderTest: ----onStopLoading
+10-02 18:03:07.735 19765-19765/com.example.lluo.loadermanagerstudy I/LoaderActivity: ----activity onStop
+10-02 18:03:07.735 19765-19765/com.example.lluo.loadermanagerstudy I/LoaderActivity: ----activity onDestroy
+10-02 18:03:07.735 19765-19765/com.example.lluo.loadermanagerstudy I/LoaderActivity: ----onLoaderReset
+10-02 18:03:07.735 19765-19765/com.example.lluo.loadermanagerstudy I/loaderTest: ----onReset
+
+页面变为不可见:
+10-02 17:47:16.615 3247-3247/com.example.lluo.loadermanagerstudy I/loaderTest: ----onStopLoading
+10-02 17:47:16.615 3247-3247/com.example.lluo.loadermanagerstudy I/LoaderActivity: ----activity onStop
+
+
+页面变为可见:
+10-02 18:04:13.065 19765-19765/com.example.lluo.loadermanagerstudy I/LoaderActivity: ----activity onStart
+10-02 18:04:13.065 19765-19765/com.example.lluo.loadermanagerstudy I/loaderTest: ----onStartLoading
+10-02 18:04:13.065 19765-19765/com.example.lluo.loadermanagerstudy I/loaderTest: ----onCancelLoad
+10-02 18:04:13.070 19765-26131/com.example.lluo.loadermanagerstudy I/loaderTest: ----loadInBackground
+10-02 18:04:13.235 19765-19765/com.example.lluo.loadermanagerstudy I/loaderTest: ----deliverResult
+
+
+旋转页面:
+10-02 18:04:43.300 19765-19765/com.example.lluo.loadermanagerstudy I/LoaderActivity: ----activity onStop
+10-02 18:04:43.300 19765-19765/com.example.lluo.loadermanagerstudy I/LoaderActivity: ----activity onDestroy
+10-02 18:04:43.450 19765-19765/com.example.lluo.loadermanagerstudy I/LoaderActivity: ----activity onCreate
+10-02 18:04:43.485 19765-19765/com.example.lluo.loadermanagerstudy I/LoaderActivity: ----activity onStart
+10-02 18:04:43.485 19765-19765/com.example.lluo.loadermanagerstudy I/LoaderActivity: ----onLoadFinished
+
+再转回来:
+10-02 18:05:22.595 19765-19765/com.example.lluo.loadermanagerstudy I/LoaderActivity: ----activity onStop
+10-02 18:05:22.595 19765-19765/com.example.lluo.loadermanagerstudy I/LoaderActivity: ----activity onDestroy
+10-02 18:05:22.695 19765-19765/com.example.lluo.loadermanagerstudy I/LoaderActivity: ----activity onCreate
+10-02 18:05:22.720 19765-19765/com.example.lluo.loadermanagerstudy I/LoaderActivity: ----activity onStart
+10-02 18:05:22.720 19765-19765/com.example.lluo.loadermanagerstudy I/LoaderActivity: ----onLoadFinished
+
+从上面可以看出:
+1.调用getLoaderManager().initLoader后触发调用LoaderCallbacks.onCreateLoader(), loader在这里被创建.
+2.页面变为可见调用onStartLoading,页面变为不可见调用onStopLoading.
+3.只要开始loading(比如onStartLoading里触发forceload),则会起一个Asynctask任务,执行loadingBackground任务,任务执行完后调用deliverResult.
+4.Loader只有在页面退出后才会被onReset,旋转页面不会被onReset.

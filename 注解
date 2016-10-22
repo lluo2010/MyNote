@@ -1,0 +1,83 @@
+注解
+RetentionPolicy.RUNTIME
+
+
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME) 
+public @interface Transient {
+
+}
+
+
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME) 
+public @interface ManyToOne {
+	 public String column() default "";
+}
+
+
+public static boolean isManyToOne(Field field){
+	return field.getAnnotation(ManyToOne.class)!=null;
+}
+
+
+public static boolean isTransient(Field f) {
+	return f.getAnnotation(Transient.class) != null;
+}
+
+
+public static List<ManyToOne> getManyToOneList(Class<?> clazz) {
+		List<ManyToOne> mList = new ArrayList<ManyToOne>();
+		try {
+			Field[] fs = clazz.getDeclaredFields();
+			for (Field f : fs) {
+				if (!FieldUtils.isTransient(f) && FieldUtils.isManyToOne(f)) {
+					ManyToOne mto = new ManyToOne();
+				...
+				mList.add(mto);
+
+			...
+
+
+
+
+createOrderWithOrderInfo
+
+kWalletRechargeNotifyUrl
+
+
+signOrderWithOrderInfo
+
+notifyUrl
+o
+
+
+
+```
+	public static String getColumnByField(Field field){
+		Property property = field.getAnnotation(Property.class);
+		if(property != null && property.column().trim().length() != 0){
+		return property.column();
+	}
+
+	@Target(ElementType.FIELD)
+	@Retention(RetentionPolicy.RUNTIME) 
+	public @interface ManyToOne {
+		 public String column() default "";
+	}
+
+
+	Class<?> clazz = ....;		
+	Field[] fields = clazz.getDeclaredFields();
+	if(fields != null){
+		...
+		Field idField = fileds[1];
+		...
+		ManyToOne manyToOne = idField.getAnnotation(ManyToOne.class);
+		if(manyToOne!=null && manyToOne.column().trim().length()!=0){
+			return manyToOne.column();
+	}
+```
+
+从Class里获取Class对应的Field,然后从Field里获取Annotation ManyToOne的独享.
+从上面可以看出来Annotation应该是属于类的,其实从Annotation是标记在class上就可以看出来了.

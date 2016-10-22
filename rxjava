@@ -1,0 +1,299 @@
+
+RxJava
+
+
+
+Func1
+subscribeOn
+subscribe
+observeOn
+Action1
+Schedulers.io()
+
+
+
+
+
+
+Schedulers.io().createWorker().schedule(new Action0()??????????
+
+
+
+
+Condition
+take,takeUtil,takewhile,takeLast,takeLastBuffer,lastOrDefault,
+skip,skipUtil,skipwhile,skipLast,
+elementAt,first,last,
+defaultIfEmpty
+Scan
+groupby
+
+
+时间相关的
+1.interval
+2.dealy
+3.delaySubscription
+4.Sample
+5.Throttling
+1)throttleFirst
+	throttleFirst(1, TimeUnit.SECONDS)
+2)throttleLast
+	throttleLast(1, TimeUnit.SECONDS)
+6.Debouncing
+
+7.Timeout
+7.take
+take也有和时间有关的版本:
+    public final Observable<T> take(long time, TimeUnit unit);
+	public final Observable<T> take(long time, TimeUnit unit, Scheduler scheduler);
+Returns an Observable that emits those items emitted by source Observable before a specified time runs  out.
+
+
+
+8.takeLast
+takeLast也有和时间有关的版本:
+	public final Observable<T> takeLast(int count, long time, TimeUnit unit);
+	public final Observable<T> takeLast(int count, long time, TimeUnit unit, Scheduler scheduler);
+Returns an Observable that emits at most a specified number of items from the source Observable that were  emitted in a specified window of time before the Observable completed.
+
+9.takeLastBuffer
+takeLastBuffer也有和时间相关的版本:
+    public final Observable<List<T>> takeLastBuffer(int count, long time, TimeUnit unit);
+	public final Observable<List<T>> takeLastBuffer(int count, long time, TimeUnit unit, Scheduler scheduler);
+Returns an Observable that emits a single List containing at most {@code count} items from the source  Observable that were emitted during a specified window of time before the source Observable completed.
+
+
+10.skip
+不是skip个数,而是skip时间
+    public final Observable<T> skip(long time, TimeUnit unit);
+Returns an Observable that skips values emitted by the source Observable before a specified time window  elapses.
+![skip](https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skip.t.png)
+
+    public final Observable<T> skip(long time, TimeUnit unit, Scheduler scheduler);
+Returns an Observable that skips values emitted by the source Observable before a specified time window  on a specified {@link Scheduler} elapses.
+
+
+
+
+
+
+位置相关的
+take
+    public final Observable<T> take(final int count);
+Returns an Observable that emits only the first {@code count} items emitted by the source Observable. If the source emits fewer than  {@code count} items then all of its items are emitted.
+
+
+takeFirst
+    public final Observable<T> takeFirst(Func1<? super T, Boolean> predicate);
+Returns an Observable that emits only the very first item emitted by the source Observable that satisfies  a specified condition.
+
+
+takelast
+    public final Observable<T> takeLast(final int count);
+Returns an Observable that emits at most the last {@code count} items emitted by the source Observable. If the source emits fewer than  {@code count} items then all of its items are emitted.
+
+takeLastBuffer
+    public final Observable<List<T>> takeLastBuffer(int count) {
+        return takeLast(count).toList();
+    }
+Returns an Observable that emits a single List containing at most the last {@code count} elements emitted by the source Observable. If the source emits fewer than {@code count} items then the emitted List will contain all of the source emissions.
+
+
+takewhile
+    public final Observable<T> takeWhile(final Func1<? super T, Boolean> predicate);
+Returns an Observable that emits items emitted by the source Observable so long as each item satisfied a * specified condition, and then completes as soon as this condition is not satisfied.
+
+takUntil
+    public final <E> Observable<T> takeUntil(Observable<? extends E> other);
+Returns an Observable that emits the items emitted by the source Observable until a second Observable * emits an item.
+
+![takeUntil](https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.png)
+
+
+first
+    public final Observable<T> first();
+Returns an Observable that emits only the very first item emitted by the source Observable, or notifies  of an {@code NoSuchElementException} if the source Observable is empty.
+
+    public final Observable<T> first(Func1<? super T, Boolean> predicate);
+Returns an Observable that emits only the very first item emitted by the source Observable that satisfies  a specified condition, or notifies of an {@code NoSuchElementException} if no such items are emitted.
+
+
+firstorDefault
+    public final Observable<T> firstOrDefault(T defaultValue);
+Returns an Observable that emits only the very first item emitted by the source Observable, or a default  item if the source Observable completes without emitting anything.
+
+	public final Observable<T> firstOrDefault(T defaultValue, Func1<? super T, Boolean> predicate);
+Returns an Observable that emits only the very first item emitted by the source Observable that satisfies  a specified condition, or a default item if the source Observable emits no such items.
+
+
+last
+    public final Observable<T> last();
+Returns an Observable that emits the last item emitted by the source Observable or notifies observers of  a {@code NoSuchElementException} if the source Observable is empty.
+
+
+    public final Observable<T> last(Func1<? super T, Boolean> predicate);
+Returns an Observable that emits only the last item emitted by the source Observable that satisfies a given condition, or notifies of a {@code NoSuchElementException} if no such items are emitted.
+
+
+
+
+
+lastOrDefault
+	public final Observable<T> lastOrDefault(T defaultValue);
+Returns an Observable that emits only the last item emitted by the source Observable, or a default item  if the source Observable completes without emitting any items.
+
+    public final Observable<T> lastOrDefault(T defaultValue, Func1<? super T, Boolean> predicate);
+Returns an Observable that emits only the last item emitted by the source Observable that satisfies a  specified condition, or a default item if no such item is emitted by the source Observable.
+
+
+
+
+skip
+	public final Observable<T> skip(int count);
+Returns an Observable that skips the first {@code count} items emitted by the source Observable and emits  the remainder.
+
+
+skipLast
+    public final Observable<T> skipLast(int count);
+Returns an Observable that drops a specified number of items from the end of the sequence emitted by the  source Observable.
+
+
+skipWhile
+skipUntil
+elementAt
+
+
+//---------
+    public final Observable<List<T>> takeLastBuffer(int count) {
+        return takeLast(count).toList();
+    }
+
+Returns an Observable that emits a single List containing at most the last {@code count} elements emitted by the  source Observable. If the source emits fewer than {@code count} items then the emitted List will contain all of the source emissions.
+
+
+
+buffer相關
+一.buffer
+一般数据缓存
+1.buffer by count
+	buffer(4)
+2.buffer by time
+	buffer(250, TimeUnit.MILLISECONDS)
+3.buffer by count and time
+	buffer(250, TimeUnit.MILLISECONDS, 2)
+4.buffer with signal
+	buffer(Observable.interval(250, TimeUnit.MILLISECONDS))
+
+交错的缓冲
+1.buffer by count
+	buffer(4, 3)
+当 count > skip 的时候，缓冲的数据重叠了
+当 count < skip 的时候，缓冲的数据有丢失
+当 count = skip 的时候，和前面看到的简单版本一样
+
+2.buffer by time
+	buffer(350, 200, TimeUnit.MILLISECONDS)
+当 timespan > timeshift 的时候，缓冲的数据重叠了
+当 timespan < timeshift 的时候，缓冲的数据有丢失
+当 timespan = timeshift 的时候，和前面看到的简单版本一样
+
+3.buffer by signal
+	public final <TOpening,TClosing> Observable<java.util.List<T>> buffer(
+	    Observable<? extends TOpening> bufferOpenings,
+	    Func1<? super TOpening,? extends Observable<? extends TClosing>> bufferClosingSelector)
+
+二. takeLastBuffer
+1.By count
+	takeLastBuffer(2)
+2.By time
+	takeLastBuffer(200, TimeUnit.MILLISECONDS)
+3.By count and time
+	takeLastBuffer(2, 200, TimeUnit.MILLISECONDS)
+
+RxJava 教程第三部分：驯服数据流之时间平移
+	http://www.tuicool.com/articles/ABfEfq3
+
+
+Android RxJava操作符一览
+http://blog.csdn.net/u014099894/article/details/51626670
+
+
+
+ReactiveX文档中文翻译
+	https://github.com/mcxiaoke/RxDocs
+	https://www.gitbook.com/book/mcxiaoke/rxdocs/details
+
+https://mcxiaoke.gitbooks.io/rxdocs/content/operators/Catch.html
+
+
+可能是东半球最全的RxJava使用场景小结
+	http://blog.csdn.net/theone10211024/article/details/50435325
+
+ReactiveX文档中文
+
+Observable.Operator????
+
+
+Single
+SingleSubscriber
+
+
+
+
+
+Single
+	https://mcxiaoke.gitbooks.io/rxdocs/content/Single.html
+
+RxJava 第一篇 - Single 使用及示例
+	https://gold.xitu.io/entry/57122396128fe1006ce8afa7
+
+
+
+
+Subjcet是属于Hot Observable的。Hot observable 不管有没有订阅者订阅，他们创建后就开发发射数据流。
+
+
+
+ConnectableObservable  ****
+
+
+
+public static <T> Observable<T> never();
+
+
+# RxJava合并
+
+## combineLatest
+
+根据输入的几个Observable,以及一个合并函数,产生另外一个Observable,规则如下:
+
+when an item is emitted by either of two Observables, combine the latest item emitted by each Observable via a specified function and emit items based on the results of this function
+当两个Observables中的任何一个发射了数据时，使用一个函数结合每个Observable发射的最近数据项，并且基于这个函数的结果发射数据。
+图如下:
+	
+声明
+
+```
+public static <T1, T2, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Func2<? super T1, ? super T2, ? extends R> combineFunction);
+public static <T1, T2, T3, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Func3<? super T1, ? super T2, ? super T3, ? extends R> combineFunction);
+...
+public static <T, R> Observable<R> combineLatest(Iterable<? extends Observable<? extends T>> sources, FuncN<? extends R> combineFunction);
+public static <T, R> Observable<R> combineLatest(Iterable<? extends Observable<? extends T>> sources, FuncN<? extends R> combineFunction);
+```
+
+支持2到9个输入Observable以及List和Iterable输入.
+
+## x
+
+##
+
+public final static Observable<Integer> range(int start, int count);
+
+
+
+
+Java Function几个函数
+
+
+
+fragmentmineheader

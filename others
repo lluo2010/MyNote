@@ -1,0 +1,197 @@
+AddBuyInfoNewViewController  新人
+
+FundsTurnInViewController 钱包转入
+
+
+
+
+
+
+
+
+
+
+
+# iOS App生命周期
+
+## App的执行状态
+
+Not running：
+App还没运行.The app has not been launched or was running but was terminated by the system.
+
+Inactive：App运行在foreground但没有接收事件.
+The app is running in the foreground but is currently not receiving events. (It may be executing other code though.) An app usually stays in this state only briefly as it transitions to a different state.
+such as an incoming phone call or SMS message) or when the user quits the app and it begins the transition to the background state. 
+
+Active：
+App运行在foreground和正在接收事件.The app is running in the foreground and is receiving events. This is the normal mode for foreground apps.
+
+Background：
+运行在background和正在执行代码.
+The app is in the background and executing code. Most apps enter this state briefly on their way to being suspended. However, an app that requests extra execution time may remain in this state for a period of time. In addition, an app being launched directly into the background enters this state instead of the inactive state. For information about how to execute code while in the background, see Background Execution.
+
+Suspended：
+运行在background但没有执行代码.
+The app is in the background but is not executing code. The system moves apps to this state automatically and does not notify them before doing so. While suspended, an app remains in memory but does not execute any code.
+When a low-memory condition occurs, the system may purge suspended apps without notice to make more space for the foreground app.
+
+状态图如下:
+![app state](https://developer.apple.com/library/ios/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/Art/high_level_flow_2x.png)
+
+
+## 二. App入口及UIApplicationDelegate
+
+### App入口
+入口在main.m的main()函数里,
+
+```
+
+  #import <UIKit/UIKit.h>
+  #import "AppDelegate.h"
+   
+  int main(int argc, char * argv[])
+  {
+      @autoreleasepool {
+          return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
+      }
+  }
+
+```
+
+UIApplicationMain()方法根据我们提供的AppDelegate类名称来创建UIApplication的一个实例，且将这个AppDelegate作为UIApplication的委托，一般我们可以通过类方法[UIApplication shareApplication]来获取对UIApplication的一个引用.
+
+在UIApplication接收到系统事件和生命周期事件时，会把相应的事件传递给UIApplicationDelegate进行处理
+
+
+### UIApplicationDelegate
+
+The UIApplicationDelegate protocol defines methods that are called by the singleton UIApplication object in response to important events in the lifetime of your app.
+
+XCode会自动为App创建一个AppDelegate.
+
+#### App delegate可以做一些事情:
+- It contains your app’s startup code. 包含启动的代码.
+- It responds to key changes in the state of your app. 响应处理App状态的切换.
+- It responds to notifications originating from outside the app, such as remote notifications (also known as push notifications), low-memory warnings, download completion notifications, and more.对来自外部的通知进行处理.
+- It determines whether state preservation and restoration should occur and assists in the preservation and restoration process as needed.决定是否做一些状态保存及恢复的工作.
+- It responds to events that target the app itself and are not specific to your app’s views or view controllers.
+- You can use it to store your app’s central data objects or any content that does not have an owning view controller. 可以用来存储一些App中不属于其他controller的数据.
+
+#### 常用方法
+
+- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions;
+  This method is your app’s first chance to execute code at launch time.
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions;
+  This method allows you to perform any final initialization before your app is displayed to the user.
+  - (void)applicationDidFinishLaunching:(UIApplication *)application;
+Tells the delegate when the app has finished launching. Don’t use. Instead, use application:didFinishLaunchingWithOptions:.不用用这个函数,用application:didFinishLaunchingWithOptions代替.
+
+
+- (void)applicationWillTerminate:(UIApplication *)application  
+You should use this method to perform any final clean-up tasks for your app, such as freeing shared resources, saving user data, and invalidating timers. Your implementation of this method has approximately five seconds to perform any tasks and return. If the method does not return before time expires, the system may kill the process altogether.
+
+当程序将要退出是被调用，通常是用来保存数据和一些退出前的清理工作。
+该方法里做的事情不要超过5秒,否则没做完就会被kill.
+
+For apps that do not support background execution or are linked against iOS 3.x or earlier, this method is always called when the user quits the app. For apps that support background execution, this method is generally not called when the user quits the app because the app simply moves to the background in that case. However, this method may be called in situations where the app is running in the background (not suspended) and the system needs to terminate it for some reason.
+
+对于iOS 3.x及以前那些不支持后台运行的app,当App退出时,这个方法一定会被调用.对于支持后台运行的App,当App退出后,App在后台运行,所以这时候
+
+
+- (void)applicationDidBecomeActive:(UIApplication *)application;
+This method is called to let your app know that it moved from the inactive to active state. 
+This can occur because your app was launched by the user or the system. Apps can also return to the active state if the user chooses to ignore an interruption (such as an incoming phone call or SMS message) that sent the app temporarily to the inactive state.
+You should use this method to restart any tasks that were paused (or not yet started) while the app was inactive.
+
+状态从the inactive to active state时调用的方法AppDelegate方法:
+
+
+- (void)applicationWillResignActive:(UIApplication *)application;
+Tells the delegate that the app is about to become inactive.
+This method is called to let your app know that it is about to move from the active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the app and it begins the transition to the background state. An app in the inactive state continues to run but does not dispatch incoming events to responders.
+You should use this method to pause ongoing tasks, disable timers.
+If your app has unsaved user data, you can save it here to ensure that it is not lost.
+
+当应用程序将要入非活动状态执行，在此期间，应用程序不接收消息或事件，比如来电话了.
+在这里我们可以暂停进行中的任务,disable定时器,也可以保存一些数据以免丢失.
+
+
+- (void)applicationWillEnterForeground:(UIApplication *)application;
+当程序从后台将要重新回到前台时候调用.
+In iOS 4.0 and later, this method is called as part of the transition from the background to the active state. You can use this method to undo many of the changes you made to your app upon entering the background. The call to this method is invariably followed by a call to the applicationDidBecomeActive: method, which then moves the app from the inactive to the active state.
+
+
+- (void)applicationDidEnterBackground:(UIApplication *)application;
+当程序被推送到后台的时候调用。所以要设置后台继续运行，则在这个函数里面设置即可.
+Use this method to release shared resources, invalidate timers, and store enough app state information to restore your app to its current state in case it is terminated later. You should also disable updates to your app’s user interface and avoid using some types of shared system resources (such as the user’s contacts database).
+
+
+
+- (BOOL)application:(UIApplication *)application shouldSaveApplicationState:(NSCoder *)coder;
+Asks the delegate whether the app’s saved state information should be restored.
+在应用退出的时候调用，负责控制是否允许保存状态，返回YES情况是可以保存，NO是不保存。
+
+
+- (BOOL)application:(UIApplication *)application shouldRestoreApplicationState:(NSCoder *)coder;
+Asks the delegate whether the app’s state should be preserved.
+在应用启动时候调用，负责控制是否恢复上次退出的时候的状态，返回YES情况是可以恢复，NO是不恢复。
+
+
+
+
+
+
+
+大多数发生状态转换时都会调用UIApplicationDelegate对象对应的方法来响应App的状态改变。
+下面是一些状态变化时会调用的UIApplicationDelegate的方法:
+
+- 启动的时候:
++ application:willFinishLaunchingWithOptions:
++ application:didFinishLaunchingWithOptions:
+
+- 切换到前台:
++ applicationDidBecomeActive:
+
+- 切换到后台:
++ applicationDidEnterBackground:
+
+- 切换的到inactive state:
++ applicationWillResignActive: (Called when leaving the foreground state.)
++ applicationWillEnterForeground: (Called when transitioning out of the background state.)
+
+- 终结(退出):
++ applicationWillTerminate: (Called only when the app is running. This method is not called if the app is suspended.)
+
+
+
+
+## 关于App的终止
+当系统为了回收一些内存供其他App使用时,或者App处于不正常状态或者对一些事件在一定的事件内没响应,App会被终止.
+
+Suspended状态下的APP终止前不会收到通知, 如果App处于background但不是suspended,终止前,app delegate的applicationWillTerminate函数会被调用.设备重启导致App终止也不会调用applicationWillTerminate函数.
+
+
+
+
+## Reference
+- [The App Life Cycle](https://developer.apple.com/library/ios/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/TheAppLifeCycle/TheAppLifeCycle.html)
+- [iOS应用程序的生命周期](http://www.cocoachina.com/industry/20140710/9089.html)
+
+
+
+
+一般说来，所有程式进入背景后都还有5 秒的执行缓冲时间，有些程序可以要求延长到10 分钟(这些当然是由开发人员在设计与提交程式时决定和声明)；
+
+
+
+- [iOS 后台运行实现总结](http://www.jianshu.com/p/d3e279de2e32)
+
+
+
+- [iOS下app的生命周期](http://www.daxueit.com/article/4286.html)
+
+
+
+
+
+git clone git@120.55.243.86:shijunlei/stone_ios_wallet.git

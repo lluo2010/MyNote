@@ -1,0 +1,219 @@
+
+
+
+
+FundsTurnInViewController:有
+FundsInPayViewController:无
+ve
+
+
+连连参数:
+
+UIViewController
+pay type:
+OrderInfo
+
+delegate: change payWay,request id
+
+
+success,cancel,waiting,limitByBank,others
+最终决定更新几个标记状态位,requestid, payWay.以及一个成功回调.
+
+
+对于融宝,易宝, 则添加:
+成功, 需要绑定,已绑定需要验证码三个接口.
+
+
+本端接口:
+1.toPay(BOOL needBindCard)
+是否需要绑定卡
+2.成功
+3.失败
+
+
+
+
+通知UI接口
+    需要一个参数UIViewController
+paySuccess
+payWay
+    NSInteger
+requestId
+    NSString
+payWaiting ???? 直接隐藏在内部好了.
+
+toFailedPage  ???? 直接隐藏在内部好了.
+
+
+
+ */
+public class InvestResultBean extends BaseBean {
+
+	/**
+	 * 
+	 */
+
+	private static final long serialVersionUID = 7430763696189385087L;
+	public static final int SHOW_VALIDATE_DIALOG=1;
+	public String rechargeNo;
+	public long id;
+	public long addTime;
+	public int payWay;
+	public String token;
+	public String errorCode;
+	public String errorMsg;
+	@SuppressWarnings("unused")
+	public int showBox;
+	public String requestid;
+}
+
+
+public class InvestInfo {
+    private String mMoney; //投资金额
+    private String mStrGoodName;  //投资名称
+    private String mStrIdNo; //身份证号码
+    private String mStrName; //用户名
+    private String mStrCardNo; //卡号
+    private String mStrPhoneNum; //手机号码
+
+    public InvestInfo(String strMoney, String strGoodName, String strName, String strIdNo, String strCardNo, String strPhoneNum){
+        mMoney = strMoney;
+        mStrGoodName = strGoodName;
+        mStrName = strName;
+        mStrIdNo = strIdNo;
+        mStrCardNo = strCardNo;
+        mStrPhoneNum = strPhoneNum;
+    }
+
+    public String getMoney() {
+        return mMoney;
+    }
+
+    public String getGoodName() {
+        return mStrGoodName;
+    }
+
+    public String getUserName(){
+        return mStrName;
+    }
+
+    public String getIDNo() {
+        return mStrIdNo;
+    }
+
+    public String getCardNo() {
+        return mStrCardNo;
+    }
+
+    public String getPhoneNum() {
+        return mStrPhoneNum;
+    }
+
+}`o
+
+
+
+
+self.orderInfo = [[OrderInfo alloc] init];
+    self.orderInfo.dt_order = endTime;
+    self.orderInfo.money_order = self.moneyTf.text;
+    self.orderInfo.no_order = order.rechargeNo;
+    self.orderInfo.name_goods = self.productItem.title;
+    self.orderInfo.acct_name = self.isAddOtherCard? self.agrementItem.acctName: self.nameTf.text;
+    self.orderInfo.id_no = self.isAddOtherCard? self.agrementItem.idNo: self.idCardTf.text;
+    self.orderInfo.phoneNumber = phoneNumber;
+    self.orderInfo.card_no = [self bankNumToNormalNum:self.bankCardTf.text];
+    NSString *userId = [kUserDefaults objectForKey:kUserId];
+
+韩梅梅
+13220482188
+6214 2427 1049 8301  银行卡
+2103 0219 6001 0121 14  身份证
+验证码一直是123456
+
+接下来几天如果有空整理一些UI编码的规则出来吧,比如之前我们谈到的UITableView的UITableViewDelegate 和 UITableViewDataSource分离出来等.
+这些规则制定出来后,大家照着做, 这样代码耦合性慢慢就会松的.
+
+
+卡号6226 9608 0174 6355
+身份证:330327198103102018
+手机:15867109701
+G
+
+
+    STValidateCodeResult__ToPay = 1,
+    STValidateCodeResult__Resend = 2,
+    STValidateCodeResult__Cancel = 3
+@interface MessageCodeView : UIImageView
+
+
+
+
+
+Subscription有如下几种实现子类：
+    BooleanSubscription
+    CompositeSubscription
+    MultipleAssignmentSubscription
+    RefCountSubscription
+    SafeSubscriber
+    Scheduler.Worker
+    SerializedSubscriber
+    SerialSubscription
+    Subscriber
+    TestSubscriber
+
+
+
+//------------
+
+if ([picName hasPrefix:@"stlc:open:"]) {//放大图片js
+    isToOpenImage
+if ([picName hasPrefix:@"stlc:buy:"]){//立即投资js
+    isToBuy
+if ([picName hasPrefix:@"stlc:share:"]){//分享js  stlc:share:title:imageUrl:url:content:
+    isToShare
+if ([picName hasPrefix:@"stlc:toast:"]){//活动等待js msg type 0 错误  1正确
+isToToast
+if([picName hasPrefix:@"stlc:openInBrowser:"]){
+    isToOPenInBrowser
+if([picName hasPrefix:@"stlc:getData"]){//js 传token
+    isToGetData
+if([picName hasPrefix:@"about:blank"]){//草泥马 太坑了
+    isBlank
+
+//跳首页
+if ([picName rangeOfString:@"app_skip/status/1"].location != NSNotFound ) {
+isToRecommend
+//跳产品页面
+if ([picName rangeOfString:@"app_skip/status/2"].location != NSNotFound ) {
+    isToProjectList
+//跳我的页面
+if ([picName rangeOfString:@"app_skip/status/4"].location != NSNotFound ) {
+    isToMine
+//跳发现页面
+if ([picName rangeOfString:@"app_skip/status/5"].location != NSNotFound ) {
+    isToFind
+//跳产品详情页面
+if ([picName rangeOfString:@"app_skip/status/3"].location != NSNotFound ) {
+    isToProjectDetail
+//跳登陆注册页面
+if ([picName rangeOfString:@"app_skip/status/6"].location != NSNotFound ) {
+    isToLogin
+//跳券包页
+if ([picName rangeOfString:@"app_skip/status/7"].location != NSNotFound) {
+    isToTicket
+
+
+
+imageLoadURL
+
+我们可以把事情想简单点.
+单这个页面不是当前页面时, 没必要去获取的.
+所以我们可以在这个页面由不可见变为可见时去服务端获取下公告内容, 这样基本就没问题了.另外用户主动刷新也获取新的内容.
+另外一个问题是如果用户在这个页面停留太长时间,公告可能已经变了,但这里还没更新, 但一般屏幕一段时间没操作会自动黑屏的, 屏幕亮后(页面由不可见变可见),也会去获取的.
+所以我觉得隔5分钟刷新一次没必要的.每隔五分钟刷新无论是从网络,还是从手机的电池消耗来看都是一种浪费.
+以上个人想法.
+
+
+
+* [MVVM 介绍](https://objccn.io/issue-13-1/)

@@ -1,0 +1,179 @@
+android Cookies
+
+//----
+public static boolean syncCookie(String url,String cookie) {
+ if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {   
+      CookieSyncManager.createInstance(context);
+ }  
+  CookieManager cookieManager = CookieManager.getInstance();
+
+   //if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { cookieManager.setAcceptThirdPartyCookies(webView,true); } else { cookieManager.setAcceptCookie(true); }
+
+  CookieManager.getInstance().setAcceptCookie(true);
+  CookieManager.getInstance().setAcceptThirdPartyCookies(true);
+    cookieManager.setCookie(url, cookie);//如果没有特殊需求，这里只需要将session id以"key=value"形式作为cookie即可
+    String newCookie = cookieManager.getCookie(url);
+    return TextUtils.isEmpty(newCookie)?false:true;
+}
+
+cookieManager.getCookie(url)
+
+ String cookies = CookieManager.getInstance().getCookie(url);
+
+
+
+ . To manually force a sync you can use the CookieManager method flush() which is a synchronous replacement for sync().
+ The WebView now automatically syncs cookies as necessary. You no longer need to create or use the CookieSyncManager. To manually force a sync you can use the CookieManager method flush() which is a synchronous replacement for sync().
+
+//-----------
+private void syncCookie(Context context, String url){
+        try{
+            Log.d("Nat: webView.syncCookie.url", url);           
+
+            CookieSyncManager.createInstance(context);
+
+            CookieManager cookieManager = CookieManager.getInstance();
+            cookieManager.setAcceptCookie(true);
+            cookieManager.removeSessionCookie();// 移除
+            cookieManager.removeAllCookie();
+            String oldCookie = cookieManager.getCookie(url);
+            if(oldCookie != null){
+                Log.d("Nat: webView.syncCookieOutter.oldCookie", oldCookie);
+            }
+
+            StringBuilder sbCookie = new StringBuilder();
+            sbCookie.append(String.format("JSESSIONID=%s","INPUT YOUR JSESSIONID STRING"));
+            sbCookie.append(String.format(";domain=%s", "INPUT YOUR DOMAIN STRING"));
+            sbCookie.append(String.format(";path=%s","INPUT YOUR PATH STRING"));
+
+            String cookieValue = sbCookie.toString();
+            cookieManager.setCookie(url, cookieValue);
+            CookieSyncManager.getInstance().sync(); 
+
+            String newCookie = cookieManager.getCookie(url);
+            if(newCookie != null){
+                Log.d("Nat: webView.syncCookie.newCookie", newCookie);
+            }
+        }catch(Exception e){
+            Log.e("Nat: webView.syncCookie failed", e.toString());
+        }
+    }
+//    
+
+if (Build.VERSION.SDK_INT >= 21) {
+    // AppRTC requires third party cookies to work
+    CookieManager cookieManager = CookieManager.getInstance();
+    cookieManager.setAcceptThirdPartyCookies(mWebView, true);
+}
+
+//----------
+//拼接成想要格式
+        for (String key : cookies.keySet()) {
+            if (!key.equals("Domain") && !key.equals("Path")) {
+                String value = cookies.get(key);
+                StringBuilder sb = new StringBuilder();
+                sb.append(key + "=" + value + ";");
+                sb.append("domain=" + Domain + ";" + "path=" + path);
+                cookieManager.setCookie(Constant.URL_JCHD, sb.toString());
+                sb = null;
+            }
+        }
+
+
+//--------
+
+ CookieSyncManager.createInstance(context); 
+            CookieManager cookieManager = CookieManager.getInstance();
+            cookieManager.setAcceptCookie(true);
+            cookieManager.removeSessionCookie();// 移除
+            cookieManager.removeAllCookie();
+
+String oldCookie = cookieManager.getCookie(url);
+            if(oldCookie != null){
+                Log.d("Nat: webView.syncCookieOutter.oldCookie", oldCookie);
+            } 
+            StringBuilder sbCookie = new StringBuilder();
+            sbCookie.append(String.format("JSESSIONID=%s","INPUT YOUR JSESSIONID STRING"));
+            sbCookie.append(String.format(";domain=%s", "INPUT YOUR DOMAIN STRING"));
+            sbCookie.append(String.format(";path=%s","INPUT YOUR PATH STRING")); 
+            String cookieValue = sbCookie.toString();
+            cookieManager.setCookie(url, cookieValue);
+            CookieSyncManager.getInstance().sync();    
+
+使用上面的方法可以将Cookie同步到WebView中，这样浏览网页时即可实现免登录。
+
+/ 设置可以访问文件
+        myWebView.getSettings().setAllowFileAccess(true);
+         //如果访问的页面中有Javascript，则webview必须设置支持Javascript
+        myWebView.getSettings().setJavaScriptEnabled(true);
+        myWebView.getSettings().setUserAgentString(MyApplication.getUserAgent());
+        myWebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        myWebView.getSettings().setAllowFileAccess(true);
+        myWebView.getSettings().setAppCacheEnabled(true);
+        myWebView.getSettings().setDomStorageEnabled(true);
+        myWebView.getSettings().setDatabaseEnabled(true);
+
+
+
+
+Android WebView保存Cookie登录
+https://my.oschina.net/bingshanguxue/blog/412242
+
+//-----------
+WebView and Cookies on Android
+http://stackoverflow.com/questions/2566485/webview-and-cookies-on-android
+
+
+
+android webview里设置cookie
+http://blog.csdn.net/encienqi/article/details/7912733
+
+
+
+setJavaScriptEnabled CookieSyncManager
+
+
+
+Android Cookie共享到WebView避免再次登录（保持登录状态） 
+http://blog.sina.com.cn/s/blog_623868100101jlxz.html
+
+oPHPSESSID=f80b896ej0qs31ppar88hkeh11; Hm_lpvt_b4c8a1efe52094b6a6e6c9b6c12ebdeb=1473746076; Hm_lvt_b4c8a1efe52094b6a6e6c9b6c12ebdeb=1473746076; domain=twap.stlc.cn
+
+
+PHPSESSID=gfc1q0o3351vg6e0mta3on32j7; Hm_lpvt_b4c8a1efe52094b6a6e6c9b6c12ebdeb=1473747830; Hm_lvt_b4c8a1efe52094b6a6e6c9b6c12ebdeb=1473747830; domain=twap.stlc.cn
+
+
+
+
+PHPSESSID=1gu3egk0k15eq5iijco2bl6mf4; Hm_lpvt_b4c8a1efe52094b6a6e6c9b6c12ebdeb=1473745764; Hm_lvt_b4c8a1efe52094b6a6e6c9b6c12ebdeb=1473745764; domain=twap.stlc.cn
+
+
+
+CookieManager cookieManager = CookieManager.getInstance();
+cookieManager.removeAllCookie();
+cookieManager.setAcceptCookie(true);
+
+if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
+  cookieManager = CookieManager.getInstance();
+  cookieManager.setAcceptThirdPartyCookies( webView, true );
+}
+
+
+
+
+domain=twap.stlc.cn; path=/; test=qHk/JVu54vESmi7G0dE9ebsGrGoRJcjXWD8GAhA0tm8imHqqoRgho5ChjLQWtV14lhY51Eb/ZoEq
+09-13 15:51:38.871 24305-24305/cn.stlc.wallet.test I/WebPowerfulFragment: X-LOG  
+
+
+
+
+
+注册/登录页 
+首页 
+产品详情页
+转入页(各种状态下的) 
+
+
+
+收支明细(收益，转入，转出)
+用户购买记录

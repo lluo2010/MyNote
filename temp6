@@ -1,0 +1,196 @@
+## 一些功能实现
+### 1. log
+
+在生成OkHttpClient时,将Interceptor设成HttpLoggingInterceptor.然后在生成Retrofit时指定client为OkHttpClient:
+
+```
+OkHttpClient httpClient = new OkHttpClient();
+if (BuildConfig.DEBUG) {
+	HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+	logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+	httpClient = new OkHttpClient.Builder().addInterceptor(logging).build();
+}
+mRetrofit = new Retrofit.Builder()
+	.baseUrl(Globals.DEBUG_URL)
+	.addConverterFactory(new STConverterFactory())
+	.client(httpClient)
+	.build();
+
+```
+
+也可以使用下面的方法指定log	到哪里,比如下面指定到logcat:
+
+```
+HttpLoggingInterceptor logging = new HttpLoggingInterceptor(new Logger() {
+  @Override public void log(String message) {
+	  Log.i("httplog",message);
+  }
+});
+```
+
+#### 需要添加依赖:
+
+compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
+
+不需要再添加下面,因为Retrofit已经包含okhttp,如果添加了不同版本的,反而有可能冲突了:
+
+compile 'com.squareup.okhttp3:okhttp:3.4.1'
+
+
+关于HttpLoggingInterceptor
+
+HttpLoggingInterceptor 是一个拦截器，用于输出网络请求和结果的 Log，可以配置 level 为 BASIC / HEADERS / BODY，都很好理解，对应的是原来 retrofit 的 set log level 方法.
+
+
+#### 关于日志级别:
+
+可以根据不同情况配置日志输出的Level：
+
+- NONE 不输出日志
+- BASIC 只输出请求方式响应码等基本信息
+- HEADERS 只输出请求和响应的头部信息
+- BODY 输出请求和响应的头部和请求体信息
+
+
+### 2. 转化器
+
+需要添加自定义的Converter.Factory.
+
+Converter.Factory本身包含一个Converter方法以及一个方法Converter的方法requestBodyConverter和另一个方法Converter的方法responseBodyConverter.
+
+#### 1) requestBodyConverter
+
+Retrofit 允许我们自己定义入参和返回的类型，不过，如果这些类型比较特别，我们还需要准备相应的 Converter，也正是因为 Converter 的存在， Retrofit 在入参和返回类型上表现得非常灵活。
+
+requestBodyConverter返回一个Converter,该Converter用来将请求里的某种类型转化为RequestBody.
+
+比如:
+
+```
+static class FileRequestBodyConverterFactory extends Converter.Factory {    
+    @Override
+    public Converter requestBodyConverter(Type type, Annotation[] parameterAnnotations, Annotation[] methodAnnotations, Retrofit retrofit) {      
+       return new FileRequestBodyConverter();
+    }
+  }  
+       
+ static class FileRequestBodyConverter implements Converter<File, RequestBody> {    
+    @Override
+    public RequestBody convert(File file) throws IOException {      
+      return RequestBody.create(MediaType.parse("application/otcet-stream"), file);
+    }
+  }
+```
+
+### 3. 与RxJava结合使用
+#### 1) 引入依赖:
+
+```
+    compile 'io.reactivex:rxandroid:1.2.1'
+    compile 'io.reactivex:rxjava:1.1.9'
+	compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
+```
+#### 2) 添加CallAdapterFactory
+Retrofit提供了CallAdapterFactory,它是一个知道如何将call实例转换成其他类型的工厂类，目前支持的有：
+
+- RxJava
+- Guava
+- Java8
+
+添加的代码:
+
+```
+Retrofit retrofit =new Retrofit.Builder()
+                   .baseUrl(Constants.BASE_HTTP_URL)
+                   .addConverterFactory(GsonConverterFactory.create())
+                   .addCallAdapterFactory(RxJavaCallAdapterFactory.create());
+```
+
+#### 3) 请求的返回改为Observable<T>:
+
+```
+@GET("users")
+Observable<List<Repo>> listRepos(String user);
+```
+
+#### 4) 像Rxjava一样做一般的订阅
+
+```
+listRespos("xx")..subscribeOn(Schedulers.from(Globals.THREAD_EXECUTOR))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(xx);
+```
+
+
+
+
+
+
+
+
+flatMap()可能交错的发送事件，最终结果的顺序可能并是不原始Observable发送时的顺序。为了防止交错的发生，可以使用与之类似的concatMap()操作符。
+
+
+
+
+
+RxJava's repeatWhen and retryWhen, explained
+http://blog.danlew.net/2016/01/25/rxjavas-repeatwhen-and-retrywhen-explained/
+
+RxJava Tip for the Day - Share, Publish, Refcount and All That Jazz
+http://blog.kaush.co/2015/01/21/rxjava-tip-for-the-day-share-publish-refcount-and-all-that-jazz/
+
+rxjava: Can I use retry() but with delay?
+http://stackoverflow.com/questions/22066481/rxjava-can-i-use-retry-but-with-delay/25292833#25292833
+
+
+
+
+
+
+
+
+RxJava 驯服数据流之副作用
+http://blog.csdn.net/jdsjlzx/article/details/51835264
+
+
+
+
+
+addToBackStack
+
+
+
+
+
+android::sharedUserId & android:process
+
+
+
+
+compileSdkVersion targetSdkVersion
+
+
+ST021609180000020079
+
+ST021609180000020099
+
+ST021609180000020094
+
+
+targetSdkVersion 是 Android 提供向前兼容的主要依据，在应用的 targetSdkVersion 没有更新之前系统不会应用最新的行为变化。这允许你在适应新的行为变化之前就可以使用新的 API （因为你已经更新了 compileSdkVersion 不是吗？）。
+
+
+
+
+
+201503261000259502"
+201503261000259502
+
+
+STLC-ZJYT
+STLC-ZJYT
+
+
+
+charlesproxy.com/getssl

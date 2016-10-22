@@ -1,0 +1,245 @@
+Gradle
+
+
+
+
+preBuild.dependsOn copyFiles
+
+
+
+
+assemble.dependsOn copyFiles
+assemble.mustRunAfter copyFiles
+
+//
+project.afterEvaluate {
+    preBuild.dependsOn copyFiles
+}
+
+clean.dependsOn copyFiles
+clean.mustRunAfter copyFiles
+
+
+`
+
+
+//--------------
+task copyDbFile (type: Copy)
+
+copyDbFile {
+    description = 'Copies the relevant db file to assets folder'
+    from 'src/main/store'
+    into 'src/main/assets'
+    include '**/*.txt'
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name == 'assembleDebug') {
+        task.dependsOn 'checkstyle'
+    }
+}
+
+
+tasks.whenTaskAdded { task ->
+        println task.name
+        if (task.name == 'clean') {
+            task.dependsOn 'atask1'
+        }
+    }
+
+ tasks.whenTaskAdded { task ->
+    if (task.name.contains('AndroidTest')) {
+        task.enabled = false
+    }
+}
+
+
+1. Gradle 完整指南（Android）
+http://www.jianshu.com/p/9df3c3b6067a
+
+
+1. Gradle Build Language Reference
+https://docs.gradle.org/current/dsl/index.html
+
+1. 构建神器Gradle
+http://jiajixin.cn/2015/08/07/gradle-android/
+
+
+
+
+event1      share
+	type
+	xx
+event2		share
+
+event3
+	xx
+event4
+assemble.dependsOn 
+
+
+task makePretty(type: Delete) {
+  delete 'uglyFolder', 'uglyFile'
+  followSymlinks = true
+}
+
+task cleanTempDir(type: Delete) {
+      delete fileTree(dir: "tempDir", exclude: "dont_delete.txt")
+  }
+
+task deleteFiles(type: Delete) {
+    delete fileTree('dir/foo') {
+        include '**/*.ext'
+    }
+}
+
+
+
+
+task copyDocs(type: Copy) {
+     from 'src/main/doc'
+     into 'build/target/doc'
+ }
+
+
+ include 'file1.suffix'
+ include '**/*.html'
+
+
+ task myCopy(type: Copy) {
+    from 'src/main/res/values'
+    into 'src/main/assets/www/xml'
+}
+
+
+buildConfigField "boolean" , "REPORT_CRASHES" , "true" 
+
+
+
+
+//-------------------------------------------
+ task deleteDebugFuYouJar(type: Delete) {
+        println '----deleteDebugFuYouJar--'
+        delete 'j8.txt'
+    }
+
+    task deleteReleaseFuYouJar(type: Delete) {
+        println '----deleteReleaseFuYouJar--'
+        delete 'j8.e'
+    }
+
+    task debugLibCopy(type: Copy) {
+        println '==========debugLibCopy'
+        from 'tempLibs/j8.txt'
+        into 'libs'
+
+    }
+
+    task releaseLibCopy(type: Copy) {
+        println '==========releaseLibCopy'
+        from 'tempLibs/j8.e'
+        into 'libs'
+
+    }
+
+    debugLibCopy.dependsOn deleteDebugFuYouJar
+    debugLibCopy.mustRunAfter deleteDebugFuYouJar
+
+    releaseLibCopy.dependsOn deleteReleaseFuYouJar
+    releaseLibCopy.mustRunAfter deleteReleaseFuYouJar
+
+    tasks.whenTaskAdded { task ->
+
+        if (task.name.equals('preDebugBuild')) {
+            println "----debug--"+task.name
+            task.dependsOn 'debugLibCopy'
+        }else if(task.name.equals('preReleaseBuild')){
+            println "----release--"+task.name
+            task.dependsOn 'releaseLibCopy'
+        }
+    }
+
+
+
+
+//-----------------------------
+
+## Task的创建
+
+调用Project的task()方法创建Task
+
+在使用Gradle时，创建Task最常见的方式便是：
+
+```
+task hello1 << {
+   println 'hello1'
+}
+```
+
+这里的“<<”表示追加的意思，即向hello中加入执行过程。我们还可以使用doLast来达到同样的效果：
+
+```
+task hello2 {
+   doLast {
+      println 'hello2'}
+}
+```
+另外，如果需要向Task的最前面加入执行过程，我们可以使用doFirst：
+
+```
+task hello3 {
+   doLast {
+      println 'hello3'}
+}
+```
+
+
+## Task依赖
+
+
+例如，定义如下两个Task，并且在"intro"里加上"dependendsOn"的关键字，如下所示：
+
+```
+task hello << {
+    println 'Hello world!'
+}
+task intro(dependsOn: hello) << {
+    println "I'm Gradle" 
+}
+````
+
+输入结果:
+
+```
+Hello World
+I'm Gradle
+```
+
+除此之外，dependensOn也支持定义多个task的依赖，使用[]括起来即可。例如
+
+task A(dependensOn:['B','C','D']) <<{ xxx }
+
+除了使用dependensOn跟字符串来定义依赖，我们也可以使用taskX.dependensOn taskY这种形式：
+
+task taskX << {
+    println 'taskX'
+}
+task taskY << {
+    println 'taskY'
+} 
+taskX.dependsOn taskY
+或者，也可以使用闭包：
+
+task taskX << {
+    println 'taskX'
+}
+taskX.dependsOn {
+    tasks.findAll { task -> task.name.startsWith('lib') }
+}
+task lib1 << {
+    println 'lib1'
+}
+
+
+
+tasks.whenTaskAdded

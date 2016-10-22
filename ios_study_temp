@@ -1,0 +1,339 @@
+
+UIViewController
+UIResponder
+UIApplicationDelegate
+UIApplication
+UIApplicationMain
+NSNotificationCenter
+
+UIView **
+UITabBarController
+UINavigationController   ***
+
+
+
+UIPageControl
+UIScrollView
+
+rootViewController
+
+
+显示隐藏?
+presentViewController
+dismissViewControllerAnimated
+
+
+
+
+BaseNavigationController
+TabBarViewController
+UITableViewCell
+
+
+
+
+rootViewController???????
+
+
+1.iOS开发多线程篇—GCD介绍
+  http://www.cnblogs.com/wendingding/p/3806821.html
+
+
+
+
+  initWithRootViewController
+
+
+
+STUserDefaultManager  **
+StoneObject  **
+
+
+
+
+
+
+NSManagedObject
+
+NSKeyedArchiver
+NSCoding
+
+
+
+Preferences and Settings Programming Guide
+  https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/UserDefaults/Introduction/Introduction.html#//apple_ref/doc/uid/10000059i
+
+
+Preferences Utilities Reference
+  https://developer.apple.com/library/ios/documentation/CoreFoundation/Reference/CFPreferencesUtils/index.html#//apple_ref/doc/uid/20001450
+
+
+- (void)initTabbars{
+    NSArray *tabbarData = @[
+                            @[@"tab_jptj",  @"tab_jptj_selected", @"精品",[HomeViewController class]],
+                            @[@"tab_lccp",  @"tab_lccp_selected", @"理财",[ProductViewController class]],
+                            @[@"tab_fx",  @"tab_fx_selected", @"发现",[DiscoveryViewController class]],
+                            @[@"tab_wo",  @"tab_wo_selected", @"我的",[MyViewController class]],
+                            ];
+
+
+
+
+
+
+Going with MVVM on Android via Data Binding
+  http://cases.azoft.com/mvvm-android-data-binding/
+
+
+
+
+
+
+Error:(15, 5) 警告: Application namespace for attribute bind:text will be ignored.
+
+
+
+
+
+
+//ios
+STUserDefaultManager:
+提供了一些便利接口方便使用nsuserdefaults保存基本数值类型.
+
+SDImageCache
+AFNetworkReachabilityManager
+
+
+
+
+
+
+
+
+Quesiton:
+[self.window addSubview:self.adImageView];
+之前有set rootview control
+
+hidesBottomBarWhenPushed??
+initTabbars 最底下添加subview不明白???
+
+
+
+
+
+NSDictionary *dict = [[NSDictionary alloc]initWithObjectsAndKeys:self.popupDetail, @"popupDetail",self, @"activityView",nil];
+ _timer = [[NSTimer alloc] initWithFireDate:[NSDate date]
+                                          interval:1.f
+                                            target:self
+                                          selector:@selector(timeChange)
+                                          userInfo:nil
+                                           repeats:YES];
+
+[[NSRunLoop currentRunLoop]addTimer:_timer forMode:NSRunLoopCommonModes];
+
+
+//----------------
+1.问题:
+1) 购买时根据用户银行卡有没有决定去哪里
+2) reloaddata,reloadViewWithData是否不是很清爽??
+3)显示规则,比如显示哪张图片,显示哪些文字,还有时间的显示格式,可以挪出去.
+
+
+loadHomeData:
+去获取数据(网络或者数据库),然后调用relaodViewWithData更新UI.
+  willAppear
+  人工刷新
+
+reloadViewWithData
+根据数据更新view
+
+
+
+BaseWebViewController
+
+
+ifCountdown
+
+
+
+
+
+Two-way Android Data Binding How to use two-way Data Binding to manage a layout
+  https://medium.com/@fabioCollini/android-data-binding-f9f9d3afc761#.gonf5927c
+
+
+
+
+iOS Communication Patterns
+  https://www.objc.io/issues/7-foundation/communication-patterns/
+
+
+//-------------
+
+Cocoa支持在运行时向某个类添加方法，即方法编译时不存在，但是运行时候存在，这时候必然需要使用performSelector去调用。所以有时候如果使用了performSelector，为了程序的健壮性，会使用检查方法
+
+
+- (BOOL)respondsToSelector:(SEL)aSelector;
+
+
+//-------------------
+
+
+Key-Value Coding and Observing
+  https://www.objc.io/issues/7-foundation/key-value-coding-and-observing/
+
+
+
+
+
+CXDCache
+
+
+isActiveRefresh
+noMoreActiveData
+
+
+FundsTurnInViewController:有卡下的钱包转入
+FundsInPayViewController:新用户或者无卡下的钱包转入
+
+
+didBack
+popToViewController
+
+
+
+UITableViewDataSource
+UITableViewDelegate
+
+
+
+NSKeyValueObservingOptionNew : change 字典中包含 key 改变后的新值
+NSKeyValueObservingOptionOld : change 字典中包含 key 改变前的旧值
+NSKeyValueObservingOptionInitial : 在添加观察者的时候立即发送一个通知给观察者,并且是在注册观察者方法返回之前
+ NSKeyValueObservingOptionPrior : 如果指定，则在每次修改属性时，会在修改通知被发送之前预先发送一条通知给观察者，这与-willChangeValueForKey:被触发的时间是相对应的。这样，在每次修改属性时，实际上是会发送两条通知。
+
+
+
+
+NSKeyValueObservingOptionInitial NSKeyValueObservingOptionNew NSKeyValueObservingOptionPrior
+
+
+1.KVOController代码分析和踩坑
+  http://www.jianshu.com/p/07661b0aa55b
+2.Facebook的KVOController源码解析
+  http://chaosgsc.com/2016/02/15/kvo/
+//-------
+FBKVOController的使用
+  http://blog.csdn.net/likendsl/article/details/36629755
+
+
+FBKVOCongroller
+一.简介
+  KVOController 是一个简单安全的 KVO（Key-value Observing，键-值 观察）工具，用于iOS和OS X 应用开发中，开源自facebook。
+1.优点
+使用 Blocks、自定义 Actions 或者 NSKeyValueObserving 回调进行通知.
+观测者移除时无异常
+控制器 dealloc 时隐式的观测者移除(自动移除)
+提升使用 NSKeyValueObservingInitial 的性能
+线程安全并提供在观测者恢复时额外的保护Thread-safety with special guards against observer resurrection – rdar://15985376.
+2.简单用法
+// create KVO controller with observer
+FBKVOController *KVOController = [FBKVOController controllerWithObserver:self];
+
+// observe clock date property 
+[KVOController observe:clock keyPath:@"date" options:NSKeyValueObservingOptionInitial|NSKeyValueObservingOptionNew 
+    block:^(ClockView *clockView, Clock *clock, NSDictionary *change) {
+      // update clock view with new value
+      clockView.date = change[NSKeyValueChangeNewKey];
+}];
+
+上面的clock为要监控的对象,"data"为clock对象里对应的变量名.
+
+二.FBKVOController创建
+下面四种方法:
+1.
+  + (instancetype)controllerWithObserver:(nullable id)observer;
+2.
+  - (instancetype)initWithObserver:(nullable id)observer retainObserved:(BOOL)retainObserved 
+3.
+  - (instancetype)initWithObserver:(nullable id)observer;
+4.
+因为它对NSObject实现了Category--@interface NSObject (FBKVOController),所以可以直接下面,self为任何NSObject的对象:
+  [self.KVOController observe:target keyPath:keyPath options:NSKeyValueObservingOptionNew 
+      block:^(id observer, id object, NSDictionary *change) {
+            id newValue = change[NSKeyValueChangeNewKey];
+    }];
+
+也可以按照1,2,3的方式创建,如下:
+  FBKVOController *_KVOController;
+  // 初始化监听者
+  _KVOController = [FBKVOController controllerWithObserver:self];
+  // 开始监听
+  [_KVOController observe:_stu
+    keyPath:@"name"
+    options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew
+    block:^(id observer, id object, NSDictionary *change) {
+    NSLog(@"%@", change);
+  }];
+
+
+三.添加监控对象及行为
+可以监控(观察)一个key或者多个key的值.
+1.支持block
+  - (void)observe:(nullable id)object keyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options block:(FBKVONotificationBlock)block;
+  - (void)observe:(nullable id)object keyPaths:(NSArray<NSString *> *)keyPaths options:(NSKeyValueObservingOptions)options block:(FBKVONotificationBlock)block;
+
+2.支持selector:
+  - (void)observe:(nullable id)object keyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options action:(SEL)action;
+  - (void)observe:(nullable id)object keyPaths:(NSArray<NSString *> *)keyPaths options:(NSKeyValueObservingOptions)options action:(SEL)action;
+
+3.支持一般的observeValueForKeyPath:ofObject:change:context
+  - (void)observe:(nullable id)object keyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options context:(nullable void *)context;
+  - (void)observe:(nullable id)object keyPaths:(NSArray<NSString *> *)keyPaths options:(NSKeyValueObservingOptions)options context:(nullable void *)context;
+
+对应FBKVONotificationBlock定义:
+  /**
+   @abstract Block called on key-value change notification.
+   @param observer The observer of the change.
+   @param object The object changed.
+   @param change The change dictionary.
+   */
+  typedef void (^FBKVONotificationBlock)(id _Nullable observer, id object, NSDictionary<NSString *, id> *change);
+
+四.提供三种形式的移除
+1.被观察的对象+key
+  - (void)unobserve:(nullable id)object keyPath:(NSString *)keyPath;
+2.被观察的对象下的所有key
+  - (void)unobserve:(nullable id)object;
+3.移除FBKVOController下的所有被观察对象.
+  - (void)unobserveAll;
+
+
+五.库
+1.使用 CocoaPods
+添加下列代码到项目Podfile文件：
+  pod 'KVOController'
+2.直接从git上把那几个.h,.m文件引进来.
+
+六.Reference:
+1.FBKVOController的使用
+2.KVOController代码分析和踩坑
+  http://www.jianshu.com/p/07661b0aa55b
+3.Facebook的KVOController源码解析
+  http://chaosgsc.com/2016/02/15/kvo/
+
+
+
+UNAVAILABLE_ATTRIBUTE 
+NSMapTable
+NSMutableSet
+NSSet
+
+respondsToSelector
+performSelector
+
+
+
+
+
+android:configChanges fontScale

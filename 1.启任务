@@ -1,0 +1,90 @@
+1.启任务
+2.每1秒通知一下
+3.到了60秒就停止任务, 同时通知
+
+
+4.在下面两种情况下都需要通知
+1) 本页面退出
+2) app整个退出
+3) 登陆后,再注销,再登陆
+
+
+
+
+1.lint 主要功能
+2.怎么用
+3.在我们的产品里面, 我们都可以用哪些.
+
+
+
+1.output
+
+1) ppt documement, demo
+2) app
+
+
+int notifyInterval, totalInterval.
+String Key;
+long mDefaultLastTimeMs;
+
+
+Observable<long> Start
+
+
+
+60
+
+
+10
+1,2,3,4,5,6,7,8,9,10;
+
+2,
+
+
+65535
+
+
+public <T> Transformer<T, T> applySchedulers() {  
+    return observable -> observable.subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread());
+}
+
+
+tv.setEnabled(false);
+					tv.setTag(R.id.action_bar_title, true);
+					if (callBack != null) {
+						callBack.onBack(false);
+					}
+					if (l > 0 && l < validate_second * 1000) {
+						long second = l / 1000;
+						String text = String.format(Locale.getDefault(), DEFAULT_FORMAT_TEXT, String.valueOf(second));
+						if (callBack instanceof SimpleCallBack) {
+							text = ((SimpleCallBack) callBack).format(second);
+						}
+						tv.setText(Html.fromHtml(text));
+					} else {
+						cancel();
+						tv.setText(tv.getTag(R.id.action_bar).toString());
+						tv.setEnabled(true);
+						tv.setTag(R.id.action_bar_title, null);
+						SharedPreferencesUtil.getInstance().put(key, 0l);
+						if (callBack != null) {
+							callBack.onBack(true);
+						}
+					}
+
+
+CountdownTimer
+
+vGetCode
+
+if (isEnable) {
+                    vGetCode.setEnabled(true);
+                } else
+                    vGetCode.setEnabled(false);
+            }
+
+1.各种第三方库(比如友盟,sharesdk,极光推送,微客服)账号注册,获取appkey/appid,以及进行联调.
+2.对于分享,每个平台都需要注册账号,比如微信的,需要开通腾讯开发者账号.
+3.如果支付,还需要支付相关的开通和接入
+4.对于App,需要创建App的签名.

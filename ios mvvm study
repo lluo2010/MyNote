@@ -1,0 +1,153 @@
+ios mvvm study
+
+
+
+
+UITableView
+UITableViewCell
+UITableViewDelegate
+UITableViewDataSource
+
+
+
+# iOS UITableView
+
+## 简介
+UITableView is a subclass of UIScrollView, which allows users to scroll through the table, although UITableView allows vertical scrolling only. 
+
+
+A table view is made up of zero or more sections, each with its own rows. Sections are identified by their index number within the table view, and rows are identified by their index number within a section. 
+
+Table views can have one of two styles, plain and grouped. 
+
+A UITableView object must have an object that acts as a data source and an object that acts as a delegate; typically these objects are either the application delegate or, more frequently, a custom UITableViewController object. The data source must adopt the UITableViewDataSource protocol and the delegate must adopt the UITableViewDelegate protocol. 
+
+The data source provides information that UITableView needs to construct tables and manages the data model when rows of a table are inserted, deleted, or reordered. 
+UITableView需要一个数据源(dataSource)来显示数据，UITableView会向数据源查询一共有多少行数据以及每一行显示什么数据等。没有设置数据源的UITableView只是个空壳。凡是遵守UITableViewDataSource协议的OC对象，都可以是UITableView的数据源。
+
+通常都要为UITableView设置代理对象(delegate)，以便在UITableView触发一下事件时做出相应的处理，比如选中了某一行。凡是遵守了UITableViewDelegate协议的OC对象，都可以是UITableView的代理对象。
+The delegate manages table row configuration and selection, row reordering, highlighting, accessory views, and editing operations.
+
+一般会让控制器充当UITableView的dataSource和delegate
+
+UITableView中数据只有行的概念，并没有列的概念.UITableView中每行数据都是一个UITableViewCell，在这个控件中为了显示更多的信息，iOS已经在其内部设置好了多个子控件以供开发者使用。
+UITableView只能有一列数据(cell)，且只支持纵向滑动，当创建好的tablView第一次显示的时候，我们需要调用其reloadData方法，强制刷新一次，从而使tableView的数据更新到最新状态。
+
+
+## UITableViewDelegate
+The delegate of a UITableView object must adopt the UITableViewDelegate protocol. Optional methods of the protocol allow the delegate to manage selections, configure section headings and footers, help to delete and reorder cells, and perform other actions.
+
+Many methods of the UITableViewDelegate protocol take NSIndexPath objects as parameters and return values.
+
+主要提供一些可选的方法，用来控制tableView的选择、指定section的头和尾的显示以及协助完成cell的删除和排序等功能。
+
+- Configuring Rows for the Table View
+	+ tableView:heightForRowAtIndexPath:
+	某一行的高度.Asks the delegate for the height to use for a row in a specified location.
+
+- Modifying the Header and Footer of Sections
+	+ tableView:heightForHeaderInSection:
+	指定section分区头部的高度.Asks the delegate for the height to use for the header of a particular section.
+	+ tableView:heightForFooterInSection:
+	指定section分区尾部的高度.Asks the delegate for the height to use for the footer of a particular section.
+	+ tableView:viewForHeaderInSection:
+	指定section分区头部显示的视图.Asks the delegate for a view object to display in the header of the specified section of the table view.
+	+ tableView:viewForFooterInSection:
+	指定section分区尾部显示的视图.Asks the delegate for a view object to display in the footer of the specified section of the table view.
+
+- Managing Selections
+	+ tableView:didSelectRowAtIndexPath:
+	当某行被选中时会调用此方法.Tells the delegate that the specified row is now selected.
+	+ tableView:didDeselectRowAtIndexPath:
+	Tells the delegate that the specified row is now deselected.
+
+
+
+## UITableViewDataSource
+The UITableViewDataSource protocol is adopted by an object that mediates the application’s data model for a UITableView object. The data source provides the table-view object with the information it needs to construct and modify a table view.
+
+
+主要为UITableView提 供显示用的数据(UITableViewCell)，指定UITableViewCell支持的编辑操作类型(insert，delete和 reordering)，并根据用户的操作进行相应的数据更新操作，如果数据没有更具操作进行正确的更新，可能会导致显示异常，甚至crush。
+
+- Configuring a Table View
+
+	+ numberOfSectionsInTableView:
+	返回分组数.Asks the data source to return the number of sections in the table view.
+
+	+ tableView:numberOfRowsInSection:
+	根据分组，返回每个分组的行数.Required. Tells the data source to return the number of rows in a given section of a table view.
+
+	+ tableView:cellForRowAtIndexPath:
+	根据分组，返回每个cell.Required. Asks the data source for a cell to insert in a particular location of the table view.
+
+
+
+
+## NSIndexPath
+主要用来标识当前cell的在tableView中的位置，该类别有section和row两个属性，前者标识当前cell处于第几个section中，后者代表在该section中的第几行。
+构建方法之一:
+
+```
+	+ (instancetype)indexPathForRow:(NSInteger)row inSection:(NSInteger)section;
+```
+row: An index number identifying a row in a UITableView object in a section identified by section.
+section:An index number identifying a section in a UITableView object.
+
+
+
+
+
+## UITableViewCell
+
+###  
+UITableView的每一行都是一个UITableViewCell,通过dataSource的tableView:cellForRowAtIndexPath:方法来初始化每一行UITableViewCell是UIView的子类，内部有个默认的子视图:contentView。contentView是UITableViewCell所显示内容的父视图，并负责显示一些辅助指示视图。辅助指示视图的作用是显示一个表示动作的图标，可以通过设置UITableViewCell的accessoryType来显示，默认是UITableViewCellAccessoryNone(不显示辅助指示视图)，其他值如下:
+- UITableViewCellAccessoryDisclosureIndicator 
+- UITableViewCellAccessoryDetailDisclosureButton
+- UITableViewCellAccessoryCheckmark
+	 
+### UITableViewCell的contentView
+ 
+contentView下默认有3个子视图，其中的2个是UILabel(通过UITableViewCell的textLabel和detailTextLabel属性访问)，第3个是UIImageView(通过UITableViewCell的imageView属性访问)
+UITableViewCell还有一个UITableViewCellStyle属性，用于决定使用contentView的哪些子视图，以及这些子视图在contentView中的位置
+
+
+
+## Reference:
+- [UITableView 最详细和最经典的讲解方法](http://www.th7.cn/Program/IOS/201411/318531.shtml)
+- [将UITableView封装到极致](http://www.jianshu.com/p/bf4ad5ecde18)
+- [UITableView的数据源(dataSource)和代理(delegate)](http://blog.csdn.net/crazychickone/article/details/38704503)
+
+
+
+
+ApplicationId versus PackageName
+http://tools.android.com/tech-docs/new-build-system/applicationid-vs-packagename
+
+
+
+
+1.修改logo图（icon）；
+2.更换极光推送账号；
+4.更改项目标识符 bundle identifier
+
+
+
+
+
+- [Retrofit](http://www.tuicool.com/articles/26jUZjv)
+- [快速Android开发系列网络篇之Retrofit](http://www.cnblogs.com/angeldevil/p/3757335.html)
+
+
+
+cn.stlc.wallet
+
+
+
+
+
+
+//---------------------------------------
+
+HttpURLConnection
+
+

@@ -1,0 +1,45 @@
+1.andfix使用
+2.如何检查有热修复
+3.热修复文件的获取
+下载,断点续传
+4.不同版本的处理
+5.修复的原理稍微有点了解
+6.andfix局限性
+7.其他应用场景的考虑.
+
+
+
+
+
+
+
+
+
+dex
+.class
+
+
+
+A.class   (xiuxxxxxxxx
+)
+
+
+xxx.class
+A.class
+B.class
+
+
+
+ public interface Operator<R, T> extends Func1<Subscriber<? super R>, Subscriber<? super T>> {
+        // cover for generics insanity
+    }
+
+
+alt+F3
+ctrl+F3
+F3
+
+
+
+Banner/弹窗/极光推送跳转的action
+http://120.27.145.142:8090/pages/viewpage.action?pageId=3145759

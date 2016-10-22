@@ -1,0 +1,226 @@
+
+
+multipart
+http://www.codejava.net/java-se/networking/upload-files-by-sending-multipart-request-programmatically
+
+
+
+1.
+/account/bankCard
+HTTP Method GET
+描述  账户银行卡列表
+
+这个需要改****************
+
+
+
+
+
+2.
+    /trade/wallet/withdraw/bankCard
+
+
+3.
+
+
+public interface GankService {
+
+    String BASE_URL = "http://www.gank.io/api/";
+
+   @GET("data/all/20/{page}") Observable<GankResultBean> getAndroidData(@Path("page") int page);
+}
+
+public <S> S createService(Class<S> serviceClass) {
+
+ return retrofit.create(serviceClass);
+    }
+
+GankService gankService = ServiceFactory.getInstance().createService(GankService.class);
+
+
+
+if (call.request().method().equalsIgnoreCase(METHOD_GET)||statusCode==200){
+
+
+4.
+APP全局配置接口   /message/appConfig  GET
+
+filename="xxxxx.ag"; name=\"file+\"+";
+
+http://218.108.85.194:8381/api/user/avatar
+http://218.108.85.194:8381/api/user/avatar
+                android:contentDescription="@string/formatValue"
+
+loginType
+N   Integer     登陆类型，1登陆，2注册
+loginTypeTip
+N   String      用户登陆弹框提示
+token
+N   String      用户登陆令牌
+avator
+Y   String      头像
+username
+N   String      用户名
+realName
+N   String      实名
+userId
+N   String      用户ID
+//--------------------
+
+
+
+
+Nzg4Nzg4MUM0OEMwNzgwREJGRjE1MEUzQjBENDhDNTYwMTJGRjEzQTYzMg==
+Nzg4Nzg4MWM0OGMwNzgwZGJmZjE1MGUzYjBkNDhjNTYwMTJmZjEzYTYzMg==
+
+Nzg4MWM0OGMwNzgwZGJmZjE1MGUzYjBkNDhjNTYwMTJmZjEzYTYzMg==
+
+
+Nzg4Nzg4MWM0OGMwNzgwZGJmZjE1MGUzYjBkNDhjNTYwMTJmZjEzYTYzMg==
+
+
+
+
+
+
+Nzg4Nzg4MWM0OGMwNzgwZGJmZjE1MGUzYjBkNDhjNTYwMTJmZjEzYTYzMg%3D%3D
+Nzg4Nzg4MUM0OEMwNzgwREJGRjE1MEUzQjBENDhDNTYwMTJGRjEzQTYzMg%3D%3D    
+
+
+
+
+RateLineBean
+
+
+
+
+public static void walletRateLine(Async<List<RateLineBean>> task, @SuppressWarnings("unused") int pageNo, TaskBack<List<RateLineBean>> listener) {
+        Type typeToken = new TypeToken<ExecResult<ArrayList<RateLineBean>>>() {}.getType();
+        Map<String, String> params = new HashMap<>();
+        params.put("token", UserSession.getToken());
+//      params.put("pageNo", pageNo + "");
+
+        task.task(_URL + "user/walletRateLine.json", params, typeToken, listener);
+    }
+
+
+
+15968700821
+
+    public  String walletType; //钱包类型， "stlc"->石头理财， "market"->市场， "xbao"->某包
+
+
+
+java.lang.IllegalStateException: Cannot set request property after connection is made
+
+Already connected
+
+
+http://218.108.85.194:8381/api/user/login
+
+400 badrequest
+
+
+
+
+ProductRateLineBean
+
+
+
+
+actionQueryBindBankCardSuccess
+
+
+
+customPostWithParameters
+[self customGetWithParameters:@{@"token":[token emptyCheck],}
+
+
+
+AgreementListItem
+
+
+actionWalletRechargeWithAmount
+
+
+
+bankCardNoDesc
+
+- (void)actionWalletRechargeWithAmount:(NSString *)amount
+                            bankCardNo:(NSString *)bankCardNo
+                                mobile:(NSString *)mobile
+                                cardNo:(NSString *)cardNo
+                              realName:(NSString *)realName
+                                payWay:(NSInteger)payWay
+                            bankCardId:(NSInteger)bankCardId
+
+
+
+
+actionQueryBindBankCardSuccess
+
+
+actionWalletPaySuccessWithUserId
+
+
+StoneCoins
+
+
+
+@property (nonatomic,copy) NSString *token;
+@property (nonatomic,unsafe_unretained)double investAmount;//交易金额
+@property (nonatomic,unsafe_unretained)long long addTime; //创建时间
+@property (nonatomic,unsafe_unretained)long long startTime; //开始时间
+@property (nonatomic,unsafe_unretained)long long dueTime;
+
+@property (nonatomic,copy) NSString *h5Url;//如果不为空，则跳转到h5页面
+
+
+
+--1472463148258dslwpodjkjkds
+Content-Type: application/octet-stream
+Content-Disposition: form-data; filename="avatar.jpg"; name="file0"
+
+
+
+
+image/jpeg
+
+
+
+postResult
+
+
+
+AsyncResult<T> 
+AsyncResult<ExecResult<List<PersonMessage>>> 
+    private static final long serialVersionUID = -8895005939818095491L;
+    public String resultStr;
+    public T t;
+
+
+
+ExecResult<T>
+ExecResult<VersionBean>>
+    public class ExecResult<T> implements Serializable {
+      public boolean success;
+        public String errorMsg;
+        public String errorType;
+        public int code;
+        public T result;
+
+
+
+
+protected void onResult(AsyncResult<ExecResult<List<T>>> result) {
+result.t = (T) obj;
+result.status = ResultStatus.errorType;
+                    result.e = e;
+
+result.status = ResultStatus.FAILED;
+            result.status = ResultStatus.FAILED;
+
+        result.netType = NetStatusUtils.getNetworkType();
+
+
+

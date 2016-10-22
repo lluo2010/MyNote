@@ -1,0 +1,119 @@
+Java泛型type note
+
+## Type
+
+Interface Type
+
+Type is the common superinterface for all types in the Java programming language. These include raw types, parameterized types, array types, type variables and primitive types.
+
+Type是Java语言中所有类型的公共父接口.Class 类也实现了Type接口.
+
+所有类型指代的有：
+
+- 原始类型 (raw types,对应Class)
+- 参数化类型 (parameterizedtypes,对应ParameterizedType)
+- 数组类型 (array types,对应GenericArrayType)
+- 类型变量 (type variables,对应TypeVariable)
+- 基本数据类型(primitivetypes,仍然对应Class)
+
+它的子接口有:
+- ParameterizedType:表示一种参数化的类型，比如Collection<T>.
+- GenericArrayType:表示泛型数组类型。比如：void method(ArrayList[] al){…}中的a的类型ArrayList[].
+- TypeVariable<D>:表示类型参数或者又叫做类型变量, 比如void method(E e)中的E.
+- WildcardType:代表一种通配符类型表达式，比如?, ? extends Number, ? super Integer.
+
+
+## 几种子接口
+
+1.ParameterizedType
+
+public interface ParameterizedType extends Type
+
+ParameterizedType represents a parameterized type such as Collection<String>.
+
+表示一种参数化的类型，比如Collection<T>
+
+重要方法:
+Type[] getActualTypeArguments()
+
+Returns an array of Type objects representing the actual type arguments to this type.
+Note that in some cases, the returned array be empty. This can occur if this type represents a non-parameterized type nested within a parameterized type.
+
+获取参数化类型<>中的实际类型.
+注意:无论<>中有几层<>嵌套，这个方法仅仅脱去最外层的<>之后剩下的内容就作为这个方法的返回值。
+
+
+2.GenericArrayType
+
+public interface GenericArrayType extends Type
+
+GenericArrayType represents an array type whose component type is either a parameterized type or a type variable.
+表示一种元素类型是参数化类型或者类型变量的数组类型.
+
+表示泛型数组类型。比如：void method(ArrayList[] al){…}
+
+重要方法:
+Type getGenericComponentType()	
+获取泛型数组中元素的类型
+
+
+3.TypeVariable
+
+public interface TypeVariable<D extends GenericDeclaration> extends Type
+
+表示类型参数或者又叫做类型变量。比如：void method(E e){}中的E就是类型变量.
+
+是各种类型变量的公共父接口.
+
+重要方法:
+1) D getGenericDeclaration()
+Returns the GenericDeclaration object representing the generic declaration declared this type variable.
+
+2) Type[] getBounds()
+Returns an array of Type objects representing the upper bound(s) of this type variable. Note that if no upper bound is explicitly declared, the upper bound is Object.
+获取类型的上下边界.
+如果参数的限制条件是多个,比如下面,就有多个上下边界:
+<? extends Map& Cloneable&Serializable
+它表示要extendsMap,Cloneable,Serializable三个, 所以这三个都有各自的边界.
+
+
+4.WildcardType
+
+public interface WildcardType extends Type
+
+WildcardType represents a wildcard type expression, such as ?, ? extends Number, or ? super Integer.
+代表一种通配符类型表达式，比如?, ? extends Number, ? super Integer(wildcard是一个单词：就是“通配符”)
+
+
+
+
+## 其他
+1.GenericDeclaration
+
+public interface GenericDeclaration
+
+A common interface for all entities that declare type variables.
+
+Class, Constructor, Method等类都实现了它.
+
+2.与泛型有关的类型在Java中的表示
+为了通过反射操作这些类型以迎合实际开发的需要，Java就新增了ParameterizedType，GenericArrayType，TypeVariable 和WildcardType几种类型来代表不能被归一到Class类中的类型但是又和原始类型齐名的类型。
+
+3.引入Type的原因
+为了程序的扩展性，最终引入了Type接口作为Class，ParameterizedType，GenericArrayType，TypeVariable和WildcardType这几种类型的总的父接口。这样实现了Type类型参数接受以上五种子类的实参或者返回值类型就是Type类型的参数。
+
+Type的引入,统一了与泛型有关的类型和原始类型Class
+
+
+
+...
+
+
+
+## Reference:
+- [谈谈Java类型中ParameterizedType，GenericArrayType，TypeVariabl，WildcardType](http://www.jb51.net/article/73456.htm)
+- [Java类型中ParameterizedType，GenericArrayType，TypeVariabl，WildcardType详解](http://www.webkfa.com/one7/w595.html)
+- [Java泛型中的pecs法则](http://blog.csdn.net/hackerhope/article/details/6525612)
+- [泛型与反射的使用总结之泛型篇](http://www.blogjava.net/bolo/archive/2014/04/29/413060.html)
+- [泛型与反射的使用总结之反射篇](http://www.blogjava.net/bolo/archive/2014/05/06/413323.html)  ***
+

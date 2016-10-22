@@ -1,0 +1,42 @@
+## 一些功能实现
+### 1.log
+
+在生成OkHttpClient时,将Interceptor设成HttpLoggingInterceptor.然后在生成Retrofit时指定client为OkHttpClient.
+
+```
+OkHttpClient httpClient = new OkHttpClient();
+if (BuildConfig.DEBUG) {
+	HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+	logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+	httpClient = new OkHttpClient.Builder().addInterceptor(logging).build();
+}
+mRetrofit = new Retrofit.Builder()
+	.baseUrl(Globals.DEBUG_URL)
+	.addConverterFactory(new STConverterFactory())
+	.client(httpClient)
+	.build();
+
+```
+
+也可以使用下面的方法指定log	到哪里,比如下面指定到logcat:
+
+```
+HttpLoggingInterceptor logging = new HttpLoggingInterceptor(new Logger() {
+  @Override public void log(String message) {
+	  Log.i("httplog",message);
+  }
+});
+```
+
+需要添加依赖:
+
+compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
+
+不需要再添加下面,因为Retrofit已经包含okhttp,如果添加了不同版本的,反而有可能冲突了:
+
+compile 'com.squareup.okhttp3:okhttp:3.4.1'
+
+
+关于HttpLoggingInterceptor
+
+HttpLoggingInterceptor 是一个拦截器，用于输出网络请求和结果的 Log，可以配置 level 为 BASIC / HEADERS / BODY，都很好理解，对应的是原来 retrofit 的 set log level 方法
