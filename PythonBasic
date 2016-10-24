@@ -1,0 +1,66 @@
+# Python 入门 note
+
+
+## 文件结构
+1. namespace
+1. 结构
+1. 引用其他文件
+
+## 基础
+
+## string
+
+## 条件
+
+
+## 函数
+
+## 类
+
+
+## 数据结构
+
+
+## 单元测试
+
+
+## 其他
+
+## Basic Demo
+
+```
+#coding=utf-8
+
+#import sys;
+#import os;
+import unittest
+
+def fun1():     #global function
+    pass
+
+class Test(unittest.TestCase): #unit test class
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    def testName(self):
+        pass
+
+
+if __name__ == '__main__':
+    #     unittest.main()     #start unit test
+    print "finish"
+
+```
+
+
+## Reference
+1. [Python Module of the Week](http://pymotw.com/2/contents.html)
+2. [Learn Python The Hard Way](http://learnpythonthehardway.org/book/)
+3. [Python天天美味](http://www.cnblogs.com/coderzh/archive/2008/07/08/pythoncookbook.html)
+
+
+
+
