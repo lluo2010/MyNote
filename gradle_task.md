@@ -122,6 +122,56 @@ task lib1 << {
 ```
 
 
+## 监听器
+我们还可以在上述build lifecycle中添加额外的监听器，监听某件事情的完成，这样我们就可以对gradle的正常运行流程做干预，比如我们想监听某个subProject 配置完毕，打印日志。我们可以这样
+
+```
+gradle.afterProject { project ->
+    println('Project ' + project + '  has evaluated')
+}
+```
+
+这段代码通常需要添加在rootProject的build.gradle脚本中，也可以添加到subProject中(只要能通过gradle获取到Gradle对象），但是这个监听器的安装需要发生在subProject在evaluated时，因此如果前面已经有project参与过evaluate，就不会得到监听。
+还可以通过如下方法监听：
+
+```
+allprojects {
+    afterEvaluate { project ->
+        if (project.hasTests) {
+            println "Adding test task to $project"
+            project.task('test') << {
+                println "Running tests for $project"
+            }
+        }
+    }
+}
+```
+
+
+1. 监听task的创建:可以在build.gradle中通过如下方式监听task的创建
+
+    ```
+    tasks.whenTaskAdded { task ->
+        task.ext.srcDir = 'src/main/java'
+    }
+    ```
+
+1. 监听整个task关系图的创建:
+
+    ```
+    gradle.taskGraph.whenReady {
+
+    }
+    ```
+1. 监听某个task的执行:
+
+    ```
+    //监听整个build完毕
+    gradle.buildFinished {
+
+    }
+    ```
+
 ## 配置Task 
 一个Task除了执行操作之外，还可以包含多个Property，其中有Gradle为每个Task默认定义的Property，比如description，logger等。
 另外，每一个特定的Task类型还可以含有特定的Property，比如Copy的from和to等。当然，我们还可以动态地向Task中加入额外的Property。
