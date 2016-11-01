@@ -98,3 +98,51 @@ xxxx
 ## 1. Daily todo
 1. SparseArray
 1. ArrayMap
+
+
+Java 8：CompletableFuture终极指南(http://www.importnew.com/10815.html)
+Java CompletableFuture 详解(http://www.cnblogs.com/leetieniu2014/p/5403277.html)
+
+
+Thread t = new  Thread(new Runnable()){
+
+}
+
+
+
+
+ss  
+    debugCompile files('fuyou_lib/paysdkPY36sdk_debug.jar')
+    releaseCompile files('fuyou_lib/paysdkPY36sdk_release.jar')
+
+packagingOptions {
+    exclude 'fuyou_lib/paysdkPY36sdk_debug.jar'
+}
+packagingOptions {
+    exclude 'fuyou_lib/paysdkPY36sdk_release.jar'
+}
+
+fuyou_lib/paysdkPY36sdk_release.jar
+
+
+
+
+目前：
+iOS分享活动时，标题和正文均显示的是标题的内容；
+Android分享活动时，标题和正文均显示的是标题的内容；
+
+目标：
+iOS分享活动时，标题显示标题的内容，正文显示正文的内容。
+
+特殊场景方案：
+如分享时，获取不到内容，图片则用logo,标题默认“石头理财”，正文默认空。
+
+
+
+
+JSONObject jsonObject = new JSONObject(result);
+						if (jsonObject.has("resText")) {
+							String resText = jsonObject.getString("resText");
+							String isEnc = jsonObject.getString("isEnc");
+
+
