@@ -200,6 +200,14 @@ Transformer接口
 有时候我们希望不打断链结构, 这时候可以使用compose.
 
 
+### amb
+
+输入为几个observable或者observable的iterator,返回最新发送数据或者结束的那个.
+
+Mirrors the one Observable in an Iterable of several Observables that first either emits an item or sends  a termination notification.
+
+![amb](https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.png)
+
 ## 其他
 
 ### SerializedSubject
