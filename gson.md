@@ -27,6 +27,9 @@ fromJson()方法用于将JSON数据转换为相应的Java对象，主要有以�
 以上的方法用于将不同形式的JSON数据解析成Java对象。
 
 
+>By default, if you mark a field as transient, it will be excluded.  As well, if a field is marked as "static" then by default it will be excluded.
+
+也就是说, 默认情况下,标记为transient或者static的字段是不会被解析/反解析的.
 
 ## Gson的基本用法
 

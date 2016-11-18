@@ -1,32 +1,88 @@
-
-
-1. 小圆点 色值不同
-2. android只有券的情况下, 上面没有灰条.
-
-
-
-
-
-scaleType="fitCenter", fitxy
-
-
-
-GSON TYPEADAPTER EXAMPLE
-http://www.javacreed.com/gson-typeadapter-example/
+private  transient DecimalFormat df= new DecimalFormat("#,###")
+改为下面其实更合适:
+private  static final DecimalFormat df= new DecimalFormat("#,###")
 
 
 
 
-Gson User Guide
-https://github.com/google/gson/blob/master/UserGuide.md
 
 
 
-   {
-                                                            id:774792,title:尊享券888元,type:2,rate:0.0,amount:888.0,startTime:2016-10-12 10:00:00,endTime:2016-10-15 11:59:59,amountLowerLimit:100000.0,amountUpperLimit:0.0},{
-                                                            id:771624,title:尊享券668元,type:2,rate:0.0,amount:668.0,startTime:2016-10-12 10:00:00,endTime:2016-10-15 11:59:59,amountLowerLimit:80000.0,amountUpperLimit:0.0},{
-                                                            id:765288,title:尊享券308元,type:2,rate:0.0,amount:308.0,startTime:2016-10-12 10:00:00,endTime:2016-10-15 11:59:59,amountLowerLimit:60000.0,amountUpperLimit:0.0},{
-                                                            id:768456,title:尊享券108元,type:2,rate:0.0,amount:108.0,startTime:2016-10-12 10:00:00,endTime:2016-10-15 11:59:59,amountLowerLimit:20000.0,amountUpperLimit:0.0},{
-                                                            id:762120,title:尊享券28元,type:2,rate:0.0,amount:28.0,startTime:2016-10-12 10:00:00,endTime:2016-10-15 11:59:59,amountLowerLimit:8000.0,amountUpperLimit:0.0},{
-                                                            id:758952,title:尊享券16元,type:2,rate:0.0,amount:16.0,startTime:2016-10-12 10:00:00,endTime:2016-10-15 11:59:59,amountLowerLimit:3000.0,amountUpperLimit:0.0},{
-                                                            id:840611,title:限量定制券6元,type:2,rate:0.0,amount:6.0,startTime:2016-11-04 04:36:39,endTime:2016-11-08 11:59:59,amountLowerLimit:3000.0,amountUpperLimit:0.0},]
+
+Bean
+
+
+transi
+
+
+
+JSONObject
+
+
+
+### 钱包按钮优化(“我的”中的“石头钱包”详情页的“定期标banner”)
+1. ios: 如果只加"去理财", 1小时, 如果全部调整, 1天.
+1. Android: 如果只加"去理财", 半小时, 如果全部调整, 1天.
+
+
+### 阶梯加息
+1. iOS: 2天
+1. Android: 2天.
+
+
+### 开售提醒
+由于开售提醒目前的需求说明有一些地方还是不确定的, 所以开发这边很难给出一个精确的时间,下面是我给的大致的一个时间.
+
+#### iOS
+1. 方案1,利用系统闹钟:2到3天(假设详情页不做任何变化)
+1. 方案2,App自己实现,3天. 局限:App被杀死后闹钟不会提醒.
+
+
+#### Android
+Android需要自己实现闹钟功能.
+
+有以下两个局限:
+1. App如果是用户正常退出, 闹钟还是会提醒的,但是,如果是被用户通过工具(比如进设置)强制退出或者因为手机资源紧张而被系统强行结束, 则闹钟不提醒.
+我们可以通过保活手段让App尽量长久存在,但是一般的App没必要这么做,只有系统类工具类的App才会这么做.
+1. 手机重启后, 我们要在用户没手工开启App情况下就要开始计时, 这个需要一个自启动的权限, 需要用户授权,如果被拒, 则无法在这种情况下计时.
+
+如果不做保活工作(我觉得也没必要),我们大致完成需要3天时间.
+
+
+
+开售提醒
+
+
+
+
+
+ll_reward_money
+
+
+        fragmentPaySuccessHeaderBinding= DataBindingUtil.inflate(inflater, R.layout.fragment_pay_success_header,  mXListView,false);
+
+
+BehaviorSubject.onnext(4)        
+
+
+
+BehaviorSubject<Object> subject = BehaviorSubject.create("default");
+subject.subscribe(xxxxxxxxxlx1);
+subject.onnext("x1");
+
+
+
+subject.onnext("sdfs");
+
+subject.subscribe(xxxxxxxxxlx2);
+subject.onnext("yh");
+
+BehaviorSubject<Object> subject = BehaviorSubject.create(obj1);
+
+subject.onnext(obj2);
+
+
+subject.subscribe(xxxxxxxxxlx2);
+
+
+

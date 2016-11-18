@@ -243,3 +243,8 @@ task lib1 << {
 
 
 tasks.whenTaskAdded
+
+
+
+
+https://flyouting.gitbooks.io/gradle-plugin-user-guide-cn/content/index.html
