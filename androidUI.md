@@ -79,3 +79,49 @@ dialog_corner_bottom.xml如下:
             <solid android:color="@color/white" />
         </shape></item>
 </selector>
+
+
+
+color 和 drawable都可以使用selector
+
+color:
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true" android:color="#ff0000"/>
+    <item android:state_checked="true" android:color="#ff0000"/>
+    <item android:state_focused="true" android:color="#ff0000"/>
+    <item android:state_pressed="true" android:color="#ff0000"/>
+    <item android:color="#FF222222"/>
+</selector>
+
+drawable:
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:state_pressed="true">
+        <shape>
+            <solid android:color="#c8c8c8"/>
+        </shape>
+    </item>
+    <item android:state_selected="true">
+        <shape>
+            <solid android:color="#c8c8c8"/>
+        </shape>
+    </item>
+    <item>
+        <shape>
+            <solid android:color="#ffffff"/>
+        </shape>
+    </item>
+
+</selector>
+
+drawable也可以直接使用shape:
+<shape xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <corners
+        android:bottomRightRadius="5dp"
+        android:topRightRadius="5dp" />
+
+    <solid android:color="#FAFAFA" />
+
+</shape>

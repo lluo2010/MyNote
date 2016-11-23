@@ -46,6 +46,7 @@
 
 >The Android Testing Support Library provides a set of APIs that allow you to quickly build and run test code for your apps, including JUnit 4 and functional UI tests.
 包含下面几项:
+
 1. AndroidJUnitRunner:A JUnit 4-compatible test runner for Android.
 1. Espresso: A UI testing framework; suitable for functional UI testing within an app. 基于Android Instrumentation framework实现的Android UI自动化测试框架，不支持跨进程.
 1. UI Automator: A UI testing framework suitable for cross-app functional UI testing between both system and installed apps.
@@ -106,29 +107,6 @@ monkeyrunner工具提供了一个API，使用此API写出的程序可以在Andro
 
 [图图图xxxxx]()
 
-
-
-
-android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
-
-    defaultConfig {
-        ...
-        //ADD THIS LINE:
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-    }
-
-
-dependencies {
-    ...
-    testCompile 'junit:junit:4.12'
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    androidTestCompile 'com.android.support.test:runner:0.2'
-    androidTestCompile 'com.android.support.test:rules:0.2'
-}
 
 ## Instrumented Unit Tests
 
@@ -292,9 +270,6 @@ public class LogHistoryAndroidUnitTest {
 1. [Developing Android unit and instrumentation tests - Tutorial](http://www.vogella.com/tutorials/AndroidTesting/article.html)
 1. [Building Instrumented Unit Tests](https://developer.android.com/training/testing/unit-testing/instrumented-unit-tests.html)
 
-## JUnit Reference
-1. [JUnit框架功能详细——JUnit学习（一）](https://my.oschina.net/pangyangyang/blog/144495)
-1. [JUnit4使用教程-快速入门](http://blog.csdn.net/chenleixing/article/details/44259453)
 
 
 
