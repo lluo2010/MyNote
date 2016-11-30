@@ -1,0 +1,143 @@
+Stone project
+
+
+
+
+
+MobclickAgent.onEvent(mContext, "main_tab", "发现");
+
+HashMap<String, String> map = new HashMap<>();
+MobclickAgent.onEvent(mContext, event_id, map);
+
+JSONObject jsonObj = new JSONObject(json);
+
+
+for (Iterator<String> keys = jo.keys(); keys.hasNext();) {  
+            try {  
+                String key1 = keys.next();  
+                System.out.println("key1---" + key1 + "------" + jo.get(key1)  
+                        + (jo.get(key1) instanceof JSONObject) + jo.get(key1)  
+                        + (jo.get(key1) instanceof JSONArray));  
+
+
+MobclickAgent.onEvent(mContext, event_id, map);
+
+
+[MobClick event:qualityStr label:@"精品"];
+
+
+
+AlarmClock
+Android API指南(二)Intent之 常用Intent:闹钟,
+http://wangkuiwu.github.io/2014/06/21/CommonIntents/
+
+https://developer.android.com/reference/android/provider/AlarmClock.html
+
+http://stackoverflow.com/questions/21204914/android-how-to-create-multiple-alarms-alarmclock-action-set-alarm
+
+http://stackoverflow.com/questions/21204914/android-how-to-create-multiple-alarms-alarmclock-action-set-alarm
+
+http://stackoverflow.com/questions/7305685/android-alarmclock-action-set-alarm-intent-produces-exception
+
+http://www.itgo.me/a/5092684626442079987/android-setting-an-alarm-clock-from-a-broadcast-receiver-only-works-once
+
+alarmclock:
+https://github.com/klinker41/alarm-clock/blob/master/src/com/klinker/deskclock/HandleApiCalls.java
+
+
+https://books.google.co.jp/books?id=jj2uAwAAQBAJ&pg=PA498&lpg=PA498&dq=AlarmClock.EXTRA_MESSAGE&source=bl&ots=qPJoM4ZxJ_&sig=2yuW_Hf_nL27r3fymgiRrqI4mww&hl=zh-CN&sa=X&ved=0ahUKEwia2_aQncDQAhVLK48KHaidAy8Q6AEIXjAI#v=onepage&q=AlarmClock.EXTRA_MESSAGE&f=false
+
+
+
+cancel alarmClock:
+http://stackoverflow.com/questions/12814658/how-to-cancel-alarmclock-that-was-created-by-my-app
+
+db
+
+1. query db
+1. db,  
+
+
+{
+[
+{
+}
+{}
+
+{ asssa
+  {}
+  {
+  }
+}
+
+{ b
+  {}
+  {
+  }
+}
+
+
+{  type =x100
+  {}
+  {
+  }
+  }
+
+
+{ qu="xinshou"}
+{qu="xinshou"}
+
+]
+
+[
+]
+
+}
+
+
+[
+{
+}
+{
+}
+{
+}
+{
+}
+]
+
+
+[
+{
+  {}
+}
+
+{
+ {},
+ {}
+ {}
+}
+
+
+{ type
+ {},
+ {}
+ {}
+}
+
+{
+}
+{
+}
+ ]
+
+
+
+Strfdsffddfing> map = BasicUtil.jsonStr2HashMap(strJson);
+Asrue(map.contafdsffddfinsKey("mNAge"));
+`Asue(map.contaifdsffddfnsKey("mStrName"));
+ring strAgeValue = map.get("mNAge");
+ssert.assertEquals("12",strAgeValue);
+tring strName = map.get("mStrName");
+ssert.assertEquals("12",strAgeValue);
+ssert.assertEquals("Louis",strName)fdaddf        

@@ -1,0 +1,27 @@
+Linux command search note
+
+
+
+
+
+
+
+
+
+inviteFriendInfo
+
+
+预售,  100,  start timer, 100
+
+tv_above_button
+
+
+//				vUsedCard.setText(Html.fromHtml("<FONT COLOR='#639BCE'>更换</FONT>"));
+
+
+eventId:"play",
+hashmap:
+    type:"成立你的俱乐部"
+    description:"点击 怎么玩？"
+
+MobclickAgent.onEvent(context, strEvent, map)
