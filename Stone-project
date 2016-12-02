@@ -1,33 +1,29 @@
-Stone project
+# Stone project
+
+## 指纹
 
 
 
-
-
-MobclickAgent.onEvent(mContext, "main_tab", "发现");
-
-HashMap<String, String> map = new HashMap<>();
-MobclickAgent.onEvent(mContext, event_id, map);
-
-JSONObject jsonObj = new JSONObject(json);
-
-
-for (Iterator<String> keys = jo.keys(); keys.hasNext();) {  
-            try {  
-                String key1 = keys.next();  
-                System.out.println("key1---" + key1 + "------" + jo.get(key1)  
-                        + (jo.get(key1) instanceof JSONObject) + jo.get(key1)  
-                        + (jo.get(key1) instanceof JSONArray));  
-
-
-MobclickAgent.onEvent(mContext, event_id, map);
-
-
-[MobClick event:qualityStr label:@"精品"];
+1. [Android开发学习之路-指纹识别api](http://www.cnblogs.com/Fndroid/p/5204986.html)
+1. [googlesamples/android-FingerprintDialog](https://github.com/googlesamples/android-FingerprintDialog)
+1. [指纹相关](https://github.com/zhuqianqian/Passbook/blob/master/app/src/main/java/com/z299studio/pb/FingerprintDialog.java)
 
 
 
-AlarmClock
+<uses-permission android:name="android.permission.RECEIVE_SMS" />
+<uses-permission android:name="android.permission.READ_SMS" />
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.READ_PHONE_STATE" />
+<uses-permission android:name="android.permission.CAMERA" />
+<!-- 录音 -->
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
+<uses-permission android:name="android.permission.WAKE_LOCK" />
+<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+
+
+
+## AlarmClock
 Android API指南(二)Intent之 常用Intent:闹钟,
 http://wangkuiwu.github.io/2014/06/21/CommonIntents/
 
@@ -141,3 +137,8 @@ ssert.assertEquals("12",strAgeValue);
 tring strName = map.get("mStrName");
 ssert.assertEquals("12",strAgeValue);
 ssert.assertEquals("Louis",strName)fdaddf        
+
+
+
+
+
