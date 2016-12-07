@@ -19,7 +19,7 @@ Mockito是Java单元测试Mock开源框架.
 
 非expect-run-verify方式也意味着，Mockito无需准备昂贵的前期启动。他们的目标是透明的，让开发人员专注于测试选定的行为。
 
-*** mock对象不能对final，Anonymous ，primitive类进行mock。***
+但是，Mockito 也并不是完美的，它不提供对静态方法、构造方法、私有方法以及 Final 方法的模拟支持。
 
 
 ## 配置
