@@ -262,6 +262,7 @@ git tag|列出所有tag
 git show tagName|查看某个tag信息
 git tag -a xx -m "yy"|创建tag,-a后跟版本号, -m后描述
 git push --tags| 把本地tag推送到远程
+git tag -d tagname| 删除本地tag
 git push origin --delete tag tagName|删除远程tag
 
 
@@ -300,9 +301,3 @@ git push origin --delete tag tagName|删除远程tag
 ---
 1. [七个你无法忽视的Git使用技巧](https://www.oschina.net/news/68437/seven-git-hacks-you-just-cannot-ignore)
 1. [图解Git](http://news.cnblogs.com/n/147941/)
-
-
-
-
-AlarmClock.EXTRA_MESSAGE
-
