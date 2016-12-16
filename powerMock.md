@@ -280,6 +280,13 @@ public class powermockExampleTest {
 todo...
 
 
+## partialmock
+
+---
+
+todo...
+
+
 
 ## PowerMock简单实现原理
 
