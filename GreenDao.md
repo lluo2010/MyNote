@@ -167,6 +167,18 @@ Builds custom entity queries using constraints and parameters and without SQL (Q
 
     使用它可以创建自定义的查询, 使用AbstractDao.queryBuilder()或者AbstractDaoSession.queryBuilder(Class)创建.
 
+1. Qeury<T>  
+A repeatable query returning entities.
+
+    通过QueryBuilder.xxxx().builde()构建, 创建后可以重复使用,提高效率.
+
+    例子:
+
+    ```
+    private Query<Student> mQuery1;
+    mQuery1 = stuDao.queryBuilder().where(StudentDao.Properties.Id.gt(50),StudentDao.Properties.Age.le(500)).build();
+    ```
+
 1. Property  
 Meta data describing a property mapped to a database column; used to create WhereCondition object used by the query builder.
 
@@ -614,7 +626,7 @@ bd.executeDeleteWithoutDetachingEntities();
 ```
 
 
-### 查询复用(Executing Queries multiple times)
+#### 查询复用(Executing Queries multiple times)
 
 一旦你使用QueryBuilder创建了一个查询，这个Query对象可以在后面的查询中重用。这样比每次创建一个新的Query对象更高效。
 
@@ -646,6 +658,25 @@ mQuery2.setParameter(0, 30);
 mQuery2.setParameter(1, age);
 list = mQuery2.list();
 ```
+
+#### Limit, Offset, and Pagination
+
+limit表示查询数据的条目数量，offset表示查询数据的起始位置.
+
+1. public QueryBuilder<T> limit(int limit)  
+Limits the number of results returned by queries.
+
+1. public QueryBuilder<T> offset(int offset)
+Sets the offset for query results in combination with limit(int). The first limit results are skipped and the total number of results will be limited by limit. You cannot use offset without limit.
+
+offset必须跟着limit.
+
+例子:
+
+```
+```
+
+todo...XXX
 
 
 #### 联合查询
@@ -748,10 +779,34 @@ RxQuery<Student> rxQuery = DbManager.getDaoSession(context).getStudentDao().quer
 
 ---
 
-Limit、Offset、Pagination....
+### LazyList 
 
+>public class LazyList<E>  
+extends java.lang.Object  
+implements java.util.List<E>, java.io.Closeable  
+>
+>A thread-safe, unmodifiable list that reads entities once they are accessed from an underlying database cursor. Make sure to close the list once you are done with it. The lazy list can be cached or not. Cached lazy lists store the entities in memory to avoid loading entities more than once. Some features of the list are limited to cached lists (e.g. features that require the entire list). Cached lists close the cursor automatically once you queried all entities. However, to avoid leaked cursors, you should not rely on this behavior: if an exception occurs before the entire list is read, you should close the lazy list (and thus the underlying cursor) on your own to be on the safe side.
+
+LazyList是线程安全的, 不可修改的list. LazyList可以缓存也可以不缓存.
+
+*** 从LazyList的get(int location),可以看出, 是需要获取某个元素时,才通过cursor从数据库获取的. 这个应该是为什么叫lazy的原因吧*** 
+
+
+### listLazy,listLazyUncached & listIterator
+
+1. LazyList<T> listLazy(): 实体按需加载到内存。一旦列表中的一个元素被首次访问，它将会被加载同时缓存以便以后使用。必须close。
+1. LazyList<T> listLazyUncached():一个“虚拟的”实体列表：任何对列表元素的访问都会导致从数据库中加载，必须close。
+1. CloseableListIterator<T> listIterator():可以通过迭代遍历按需加载的数据结果集（lazily）。数据没有缓存。必须close。
+
+listLazy、listLazyUncached和listIterator方法使用了greenDAO中的LazyList类。为了按需加载数据，它绑定了一个数据库cursor的引用。这就是一定确保关闭lazy lists和iterators（通常在一个try/finally块内）的原因。一旦所有元素被访问或者遍历完成，来自于listLazy（）的cached lazy和来自listIterator（）的lazy iterator会自动关闭cursor。然而，list处理过早停止，你应该调用close（）手动关闭。
+
+这三个都是需要时才加载,listLazy会会做内存缓存, listLazyUncached和listIterator不会做内存缓存.
+
+例子:
+
+```
+```
 todo...XXX
-
 
 ## 其他
 
@@ -773,9 +828,11 @@ todo...XXX
 1. [GreeDao JavaDoc](http://greenrobot.org/greendao/documentation/javadoc/)
 1. [greenDAO Documentation](http://greenrobot.org/greendao/documentation/)
 1. [GreenDAO](http://blog.csdn.net/wds1181977/article/details/51584052)
+1. [Modelling entities](http://greenrobot.org/greendao/documentation/modelling-entities/)
 1. [GreenDao 使用](http://www.jianshu.com/p/189377822376)
 1. [GreenDao 3.X之基本使用**](http://blog.csdn.net/io_field/article/details/52214099)
 1. [GreenDao3 使用说明**](http://www.jianshu.com/p/4e6d72e7f57a)
+1. [GreenDao Queries](http://greenrobot.org/greendao/documentation/queries/)
 1. [Greendao Query and QueryBuilder](http://vjson.com/wordpress/greendao-query-and-querybuilder.html)
 1. [greenDAO讲义（二）：数据库查询篇](https://my.oschina.net/cheneywangc/blog/196360)
 1. [greenDAO官方文档翻译--使用教程](http://blog.sina.com.cn/s/blog_af5cfb030102w20v.html)
