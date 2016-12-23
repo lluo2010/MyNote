@@ -321,6 +321,7 @@ private class CrimeAdapter
 1. [RecyclerView Part 1: Fundamentals For ListView Experts](https://www.bignerdranch.com/blog/recyclerview-part-1-fundamentals-for-listview-experts/)
 1. [RecyclerView in Android: The basics](https://antonioleiva.com/recyclerview/)
 1. [Android 优雅的为RecyclerView添加HeaderView和FooterView](http://blog.csdn.net/lmj623565791/article/details/51854533)
+1. [RecyclerView添加Header的正确方式](http://blog.csdn.net/qibin0506/article/details/49716795)
 
 
 LayoutParameters????
