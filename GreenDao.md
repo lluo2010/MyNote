@@ -21,8 +21,8 @@ greenDao是一个将对象映射到关系数据库(SQLite)中的轻量且快速�
 * 数据库加密, Database encryption: greenDAO supports SQLCipher to keep your user’s data safe
 
 
-注意:
-数据库内的字段名称和属性名称规则是不一样的, todo...XXX.
+注意:  
+数据库内的字段名称和属性名称规则不是完全一样的,在数据库里字段会全部转为大写,同时如果采用驼峰命名的(类似studentName)会转为STUDENT_NAME,其实就是用下划线去分开.这个具体可以看每个对象生成的对应的Dao里的createTable里的建表语句.
 
 
 ## 配置
@@ -118,7 +118,7 @@ public class User1 {
 ### DaoMaster
 The entry point for using greenDAO. DaoMaster holds the database object (SQLiteDatabase) and manages DAO classes (not objects) for a specific schema. It has static methods to create the tables or drop them. Its inner classes OpenHelper and DevOpenHelper are SQLiteOpenHelper implementations that create the schema in the SQLite database.
 
-它是使用greenDao的入口, 它持有一个数据库对象(SQLiteDatabase),管理所有特定schema的DAO类.有一个静态的方法创建和drop数据库表。它的内部类OpenHelper和DevOpenHelper是SQLiteOpenHelper的实现类，用于创建SQLite数据库的模式。
+它是使用greenDao的入口, 它持有一个数据库对象(SQLiteDatabase),管理所有特定schema的DAO类.有一个静态的方法创建和drop数据库表。它的内部类OpenHelper和DevOpenHelper是SQLiteOpenHelper的实现类，用于创建SQLite数据库的模式。我们如果需要数据库升级, 需要重写它的内部类OpenHelper.
 
 ### DaoSession
 Manages all available DAO objects for a specific schema, which you can acquire using one of the getter methods. DaoSession provides also some generic persistence methods like insert, load, update, refresh and delete for entities. Lastly, a DaoSession objects also keeps track of an identity scope. For more details, have a look at the session documentation.
@@ -167,7 +167,7 @@ Builds custom entity queries using constraints and parameters and without SQL (Q
 
     使用它可以创建自定义的查询, 使用AbstractDao.queryBuilder()或者AbstractDaoSession.queryBuilder(Class)创建.
 
-1. Qeury<T>  
+1. Query<T>  
 A repeatable query returning entities.
 
     通过QueryBuilder.xxxx().builde()构建, 创建后可以重复使用,提高效率.
@@ -213,15 +213,6 @@ public class User1 {
     @Property(nameInDb = "UserName")
     private String name;
     private int age;
-    @Generated(hash = 479634891)
-    public User1(Long id, String name, int age) {
-        this.id = id;
-        this.name = name;
-        this.age = age;
-    }
-    @Generated(hash = 1224450628)
-    public User1() {
-    }
 ```
 
 ### 常用注解
@@ -244,15 +235,6 @@ public class User1 {
     @Property(nameInDb = "UserName")
     private String name;
     private int age;
-    @Generated(hash = 479634891)
-    public User1(Long id, String name, int age) {
-        this.id = id;
-        this.name = name;
-        this.age = age;
-    }
-    @Generated(hash = 1224450628)
-    public User1() {
-    }
 ```
 
 *** 编译后, GreenDao会往标示为@Entity的User1添加一些其他方法,同时产生一个User1Dao类. ***
@@ -340,7 +322,7 @@ public class Customer {
 
     也就是说这个是greenDao在生成代码的时候自动添加的,提示用户不能修改这块代码,修改了会报错.
 
-1. @keep  
+1. @Keep  
 告诉编译器, 在下一次运行产生dao代码期间，被该注解标记的，保持不变,编译器不要去覆盖它. 这种情况往往是第一次是编译器自动生成的,然后开发人员自己改了一些,然后期望后面编译器再编译时不会再去盖图该部分.
 
     *** 注意：不要使用在类的成员变量上(如果你不清楚它的用法)，当model发生改变，不会同步到生成的dao文件中.***
@@ -559,10 +541,11 @@ StringCondition(java.lang.String string, java.lang.Object value)
 
 方法名|说明
 -|-
-java.util.List<T>	queryRaw(java.lang.String where, java.lang.String... selectionArg)|A raw-style query where you can pass any WHERE clause and arguments.
-Query<T>	queryRawCreate(java.lang.String where, java.lang.Object... selectionArg)| Creates a repeatable Query object based on the given raw SQL where you can pass any WHERE clause and arguments.
-Query<T>	queryRawCreateListArgs(java.lang.String where, java.util.Collection<java.lang.Object>selectionArg)|Creates a repeatable Query object based on the given raw SQL where you can pass any WHERE clause and arguments.
+java.util.List\<T>	queryRaw(java.lang.String where, java.lang.String... selectionArg)|A raw-style query where you can pass any WHERE clause and arguments.
+Query\<T>	queryRawCreate(java.lang.String where, java.lang.Object... selectionArg)| Creates a repeatable Query object based on the given raw SQL where you can pass any WHERE clause and arguments.
+Query\<T>	queryRawCreateListArgs(java.lang.String where, java.util.Collection<java.lang.Object>selectionArg)|Creates a repeatable Query object based on the given raw SQL where you can pass any WHERE clause and arguments.
 
+*** queryRaw返回的是List\<T>,queryRawCreate和queryRawCreateListArgs返回的是Query<T>, 所以后面两个查询是可以复用. ***
 
 queryRaw例子:
 
@@ -669,7 +652,7 @@ Limits the number of results returned by queries.
 1. public QueryBuilder<T> offset(int offset)
 Sets the offset for query results in combination with limit(int). The first limit results are skipped and the total number of results will be limited by limit. You cannot use offset without limit.
 
-offset必须跟着limit.
+*** offset必须跟着limit.***
 
 例子:
 
@@ -685,13 +668,105 @@ todo...XXX
 
 
 
-## 升级处理
+## 数据库升级处理
 
 ---
 
-todo...XXX
+一般数据库的升级需要在SQLiteOpenHelper的onUpgrade()根据版本号对数据库进行某些操作. GreenDao中的数据库升级也需要进行类似的操作.
 
-关于DevOpenHelper
+我们需要重新实现DaoMaster.OpenHelper,然后在它的onUpgrade()根据版本号对数据库进行某些操作.
+
+DaoMaster.operation是自动生成的抽象类, 它从DatabaseOpenHelper派生, DatabaseOpenHelper又是从SQLiteOpenHelper派生, 所以它其实就是一个SQLiteOpenHelper类.
+
+### 关于DevOpenHelper
+
+DevOpenHelper是一个SQLiteOpenHelper,它的实现如下, 它在升级后会删除原来的所有表,然后重新创建:
+
+```
+public static class DevOpenHelper extends OpenHelper {    
+  public DevOpenHelper(Context context, String name, CursorFactory factory) {
+             super(context, name, factory);    
+  }    
+  @Override    
+  public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {            
+        Log.i("greenDAO", "Upgrading schema from version " + oldVersion + " to " + newVersion + " by dropping all tables");        
+        dropAllTables(db, true);        
+        onCreate(db);    
+  }
+}
+```
+
+### 升级实现
+
+因为这样会导致已经存在的数据会被删除, 所以只有开发的时候才会用.
+
+为了实现正常的升级, 我们需要重新实现DaoMaster.OpenHelper.
+
+步骤如下:
+
+1. 修改schemaVersion
+
+    ```
+    greendao {
+        //指定数据库schema版本号，迁移等操作会用到
+        schemaVersion 2 
+    ```
+
+1. 重新实现OpenHelper,在onUpgrade里做升级相关的操作
+    重写onUpgrade,例子如下:
+
+    ```
+    public class THDevOpenHelper extends DaoMaster.OpenHelper {
+        public THDevOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory) {
+            super(context, name, factory);
+        }
+
+        @Override
+        public void onCreate(Database db) {
+            super.onCreate(db);
+        }
+
+        @Override
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+            switch (oldVersion) {
+                case 1:
+                    // 创建NewUser新表
+                    NewUserDao.createTable(db, true);
+
+                    // 加入新字段
+                    db.execSQL("ALTER TABLE 'USER' ADD 'USER_NAME' TEXT;");
+
+                    // 删除表
+                    UserDao.dropTable(db, true);
+                    Log.i("greenDAO", "Upgrading schema from version " + oldVersion + " to " + newVersion);
+                    break;
+            }
+        }
+    }
+
+    ```
+
+1. 在创建DaoMaster时使用新的OpenHelper.
+
+    例子如下:
+
+    ```
+    public void onCreate() {
+            super.onCreate();
+            THDevOpenHelper helper = new THDevOpenHelper(this, "test.db", null);
+            SQLiteDatabase sqLiteDatabase = helper.getWritableDatabase();
+            daoMaster = new DaoMaster(sqLiteDatabase);
+            daoSession = daoMaster.newSession();
+        }
+
+        public static DaoMaster getDaoMaster() {
+            return daoMaster;
+        }
+
+        public static DaoSession getDaoSession() {
+            return daoSession;
+        }
+    ```
 
 
 ## 不同表相互之间有关联 怎么处理????
@@ -715,7 +790,7 @@ GreenDao 3.X已集成RxJava，其中，RxDao<T，K> 和RxQuery<T>便是GreenDao 
 
 和AbstractDao类似,只是它的方法返回值是Observable<X>.
 
-RxDao<T, K>中, T表示的是实体Entity的类型,K表示的是主键类型,如果没有主键, 使用Void.
+*** RxDao<T, K>中, T表示的是实体Entity的类型,K表示的是主键类型,如果没有主键, 使用Void. ***
 
 ### RxQuery
 
@@ -819,7 +894,7 @@ todo...XXX
     ```
     这样会输出SQL命令和调用相关build方法时传入的参数。
 
-1.
+1. ...
 
 ## Reference
 
@@ -837,3 +912,4 @@ todo...XXX
 1. [greenDAO讲义（二）：数据库查询篇](https://my.oschina.net/cheneywangc/blog/196360)
 1. [greenDAO官方文档翻译--使用教程](http://blog.sina.com.cn/s/blog_af5cfb030102w20v.html)
 1. [GreenDAO 3.x — Android ORM框架(二)](https://kevindgk.github.io/android/greendao/GreenDAO%203.x%E5%AE%98%E6%96%B9%E6%96%87%E6%A1%A3%20%E2%80%94%20Android%20ORM%E6%A1%86%E6%9E%B6(%E4%BA%8C)/)
+1. [GreenDAO数据库升级问题的解决方法](http://mojijs.com/2016/08/217716/index.html)
