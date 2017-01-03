@@ -409,6 +409,7 @@ todo...XXX
 ---
 
 1. [神兵利器Dagger2***](http://www.open-open.com/lib/view/open1482201981550.html)
+1. [Dagger2 最清晰的使用教程***](http://www.open-open.com/lib/view/open1474442495481.html)
 1. [Dagger2使用](http://www.jianshu.com/p/c2feb21064bb)
 1. [从Dagger2基础到Google官方架构MVP+Dagger2架构详解 **](http://blog.csdn.net/u014315849/article/details/51566388)
 1. [安卓开发 第一篇 关于依赖注入框架dagger2的使用和理解](http://blog.csdn.net/naivor/article/details/51155741)
