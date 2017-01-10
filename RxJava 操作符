@@ -135,56 +135,6 @@ Observable.just(1,2,3,4,5,6).cast(Integer.class).subscribe(new Action1<Integer>(
         });
 ```
 
-### scan
-
-public final Observable<T> scan(Func2<T, T, T> accumulator);
-
-scan操作符通过遍历源Observable产生的结果，依次对每一个结果项按照指定规则进行运算，计算后的结果作为下一个迭代项的第一个参数，每一次迭代项都会把计算结果输出给订阅者。
-
-
-子弹图:
-![scan](https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/scan.png)
-
-
-例子:
-
-```
-Observable.just(1, 2, 3, 4, 5)
-    .scan(new Func2<Integer, Integer, Integer>() {
-        @Override
-        public Integer call(Integer sum, Integer item) {
-            //参数sum就是上一次的计算结果
-            return sum + item;
-        }
-    }).subscribe(new Subscriber<Integer>() {
-        @Override
-        public void onNext(Integer item) {
-            System.out.println("Next: " + item);
-        }
-
-        @Override
-        public void onError(Throwable error) {
-            System.err.println("Error: " + error.getMessage());
-        }
-
-        @Override
-        public void onCompleted() {
-            System.out.println("Sequence complete.");
-        }
-    });
-```
-
-结果:
-
-```
-Next: 1 
-Next: 3 
-Next: 6 
-Next: 10 
-Next: 15 
-Sequence complete.
-```
-
 
 ### compose
 
@@ -207,6 +157,135 @@ Transformer接口
 Mirrors the one Observable in an Iterable of several Observables that first either emits an item or sends  a termination notification.
 
 ![amb](https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.png)
+
+
+### scan
+
+scan操作符通过遍历源Observable产生的结果，依次对每一个结果项按照指定规则进行运算，计算后的结果作为下一个迭代项的第一个参数，每一次迭代项都会把计算结果输出给订阅者。
+
+定义:
+
+```
+public final Observable<T> scan(Func2<T, T, T> accumulator);
+public final <R> Observable<R> scan(R initialValue, Func2<R, ? super T, R> accumulator);
+```
+
+子弹图:
+![scan](https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/scan.png)
+
+
+有初始值例子:
+
+``` 
+Observable<Integer> obs1 = Observable.just(1, 2, 3,4,5);
+obs1.reduce(100, (x,y)->{
+	System.out.println("x:"+x+",y:"+y);
+	return x+y;
+})
+.subscribe(v->{
+	System.out.println("onNext:"+v);
+});
+```
+
+结果:
+
+```
+onNext:100
+x:100,y:1
+onNext:101
+x:101,y:2
+onNext:103
+x:103,y:3
+onNext:106
+x:106,y:4
+onNext:110
+x:110,y:5
+onNext:115
+```
+
+无初始值的例子:
+
+```
+```
+
+结果:
+
+```
+onNext:1
+x:1,y:2
+onNext:3
+x:3,y:3
+onNext:6
+x:6,y:4
+onNext:10
+x:10,y:5
+onNext:15
+```
+
+*** 有初始值先会onNext调用初始值, 无初始值则先会onNext调用第一个值 ***
+
+### reduce
+
+将初始化与Observable中的元素通过函数accumulator进行操作, 得到的结果作为下一个操作符与下一个observable中的值继续进行accumulator操作,依次进行. 如果没有初始值,才第一个元素作为初始值.
+
+reduce的结果为最后accumalator的结果.
+
+定义:
+
+```
+public final Observable<T> reduce(Func2<T, T, T> accumulator);
+public final <R> Observable<R> reduce(R initialValue, Func2<R, ? super T, R> accumulator);
+```
+
+例子:
+
+```
+Observable<Integer> obs1 = Observable.just(1, 2, 3,4,5);
+obs1.reduce(100, (x,y)->{
+	System.out.println("x:"+x+",y:"+y);
+	return x+y;
+})
+.subscribe(v->{
+	System.out.println("onNext:"+v);
+});
+```
+
+有初始值, 结果如下:
+
+```
+x:100,y:1
+x:101,y:2
+x:103,y:3
+x:106,y:4
+x:110,y:5
+onNext:115
+```
+
+没有初始值例子:
+
+```
+Observable<Integer> obs1 = Observable.just(1, 2, 3,4,5);
+obs1.reduce((x,y)->{
+	System.out.println("x:"+x+",y:"+y);
+	return x+y;
+})
+.subscribe(v->{
+	System.out.println("onNext:"+v);
+});
+```
+结果:
+
+```
+x:1,y:2
+x:3,y:3
+x:6,y:4
+x:10,y:5
+onNext:15
+```
+
+*** scan和reduce的区别是, scan会把每次的计算结果都传出来(onNext),而reduce则只会把最后的结果传出来(onNext). ***
+
+
 
 ## 其他
 
