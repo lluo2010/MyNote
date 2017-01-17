@@ -81,6 +81,23 @@
 
 ## 数据类型
 
+动态性和弱类型
+
+JS 弱类型的表现特征：一方面，定义变量时无需指明数据类型，在初始化时变量可以被转化为任意类型；另一方面，运行时也可以转变变量的数据类型。
+
+```
+//声明一个变量s
+var s;
+//初始化时赋值s为字符串
+s = 6;
+//再次赋值s为整型
+s = "ECMAScript ";
+//运行时再次转变s的数据类型
+s += 6;
+//查看s的数据类型,输出结果为："string"
+console.log(typeof s);
+```
+
 ---
 
 todo...XXX
@@ -187,6 +204,7 @@ todo...XXX
 1. [如何编写可维护的面向对象JavaScript代码](http://blog.jobbole.com/18191/)
 1. [The JavaScript Tutorial](http://javascript.info/)
 1. [W3C JavaScript Tutorial](http://www.w3schools.com/js/)
+1. [JavaScript 原始值和引用值](http://www.jianshu.com/p/e775a3f9ab70)
 
 
 
