@@ -37,19 +37,61 @@ https://www.stlc.cn/Uploads/msgicon/+xxxx
 
 
 
+# Javascript模块化
 
 
 
-1. 数据库使用greenDao
-2. 2439 leak
-3. 加壳,脱壳
-4. app 数据安全
-5. ViewPager outOfBound
-6. ...
-7. android 7.0
-8. 购买页面, 利率收益相关重构(暂时不用mvp)
-9. RxJava2.0, RxAndroid 2.0
 
-1
-2
-3.
+
+## Reference
+
+---
+
+1. [JavaScript 模块化历程](http://web.jobbole.com/83761/)
+
+
+
+
+
+
+
+
+
+Dialog详解（包括进度条、PopupWindow、自定义view、自定义样式的对话框）
+http://www.cnblogs.com/tianzhijiexian/p/3867731.html
+
+
+
+
+1. Dialogs
+     http://developer.android.com/guide/topics/ui/dialogs.html
+2. Dialog详解（包括进度条、PopupWindow、自定义view、自定义样式的对话框）
+    http://www.cnblogs.com/tianzhijiexian/p/3867731.html
+
+
+
+
+FragmentPagerAdapter
+
+
+
+
+
+
+关于RxJava最友好的文章——背压
+https://zhuanlan.zhihu.com/p/24473022
+
+关于RxJava最友好的文章（初级篇）
+https://zhuanlan.zhihu.com/p/23584382
+
+关于RxJava最友好的文章（进阶篇）
+https://zhuanlan.zhihu.com/p/23585300
+
+
+
+direct buffer
+
+
+```k`
+todo list:
+Annotation
