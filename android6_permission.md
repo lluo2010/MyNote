@@ -71,3 +71,4 @@ STORAGE	| READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE
 1. [在运行时请求权限](https://developer.android.com/training/permissions/requesting.html)
 1. [android 6.0 权限管理的学习资料和使用例子](http://blog.csdn.net/yangqingqo/article/details/48371123)
 1. [系统权限](https://developer.android.com/guide/topics/security/permissions.html#defining)
+1. [聊一聊Android 6.0的运行时权限**](http://droidyue.com/blog/2016/01/17/understanding-marshmallow-runtime-permission/)
