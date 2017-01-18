@@ -10,6 +10,10 @@ BasePresenter是在MvpFragment的onViewCreated里被调用onViewCreated()创建�
 
 通过上面的过程,BasePresenter被创建, attachView被调用, 最后detachView被调用,Presenter该清理的资源被清理.
 
+对应时序图如下:
+
+![时序图](https://www.evernote.com/shard/s164/sh/2414963d-b239-44a5-940f-4f24d7c7ee59/600d42d911a7b862/res/db25b029-50c4-4179-b8e7-2a245cdf54c5.png?resizeSmall&width=832)
+
 ## Presenter
 
 Presenter提供attachView和detachView两个接口:
