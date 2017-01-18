@@ -252,16 +252,16 @@ JSONArray(Object array)| Creates a new JSONArray with values from the given prim
 
     输出:
 
-        ```
-        toJson:{
-        "origin": [
-            "hangzhou",
-            "wenzhou"
-        ],
-        "age": 10,
-        "isPublic": true
-        }
-        ```
+    ```
+    toJson:{
+    "origin": [
+        "hangzhou",
+        "wenzhou"
+    ],
+    "age": 10,
+    "isPublic": true
+    }
+    ```
 
     也可以根据映射数组从一个JSONObject中获取一个子JSONObject, 如下:
 
