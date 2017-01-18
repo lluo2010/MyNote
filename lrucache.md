@@ -34,7 +34,7 @@ Android用LruCache来取代原来强引用和软引用实现内存缓存.LruCach
 
 	>maxSize for caches that do not override sizeOf(K, V), this is the maximum number of entries in the cache. For all other caches, this is the maximum sum of the sizes of the entries in this cache.
 	
-	如果sizeof函数没有重写，maxSize是整个cache内允许的最大的entries数，如果重写了，表示的是允许的所有的entries的size大小，不是个数。：w
+	如果sizeof函数没有重写，maxSize是整个cache内允许的最大的entries数，可以根据之前的需求重写该函数, 比如重写成表示的是entry的大小.
 
 
 
