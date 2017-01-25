@@ -543,6 +543,9 @@ subscribeOn()和observeOn()都是用来切换线程用的.
 
 
 
+上面的理解感觉是subscribeOn影响subscribeOn.call()和doOnSubscribe(),observeOn()影响onNext(), onError(), onCompleted(), 但是要注意, 想.map(),.filter()等其实它的处理函数都是在中间生成的Subscriber中调用的, 所以如果observeOn()在这些函数之前调用,因为它影响的是onNext,onError,onCompleted, 所以也会影响map,filter它们的线程.
+** 所以我们一般都是将subscribeOn()在所有的操作后面调用,observeO()挨着subscribe调用,这样就可以达到中间操作都是按subscribeOn指定的线程模型来, 而最后的Subscriber的onNext,onCompleted, onError线程则由observeOn决定. **
+
 ## Reference
 
 ---
