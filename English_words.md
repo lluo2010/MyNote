@@ -627,3 +627,80 @@
     We learned how to set up a new Android project with Rxjava and how to create an Observable list to populate RecyclerView. (填入)
     我们掌握了如何使用Rxjava创建一个项目以及如何创建一个Observable list用来填入RecyclerView
     ```
+
+
+## converse & conversation
+
+1. converse
+
+    ```
+    英  [kən'vɜːs；ˈkɒn-]   美  [kən'vəʳs]
+    adj. 相反的，逆向的；颠倒的
+    vi. 交谈，谈话；认识
+    n. 逆行，逆向；倒；相反的事物
+    ```
+
+    例句:
+
+    ```
+    Luke sat directly behind the pilot and conversed with him.
+    卢克坐在飞行员的正后方和他交谈。
+
+    What you do for a living is critical to where you settle and how you live – and the converse is also true.(相反的说法)
+    你的工作决定你在哪里定居和怎样生活–反之亦然。 
+    ```
+
+1. conversation 
+
+    ```
+    英  [kɒnvə'seɪʃ(ə)n]   美  [,kɑnvɚ'seʃən]
+    n. 交谈，会话；社交；交往，交际；会谈；（人与计算机的）人机对话
+    ```
+
+    例句:
+
+    ```
+    He's a talkative guy, and I struck up a conversation with him.
+    他是一个健谈的人，我和他聊了起来。
+    ```
+
+
+## proper & property
+
+---
+
+1. proper
+
+    ```
+    英  ['prɒpə]   美  ['prɑpɚ]
+    adj. 适当的；本身的；特有的；正派的
+    adv. 完全地
+
+    ```
+
+    例句:
+
+    ```
+    The Supreme Court will ensure that the proper procedures have been followed.
+    最高法院将保证正规的程序得到遵守。
+
+    In those days it was not thought entirely proper for a woman to be on the stage.
+    在那时，女人登台演出不被认为是完全适宜的。
+    ```
+
+1. property 
+
+    ```
+    英  ['prɒpətɪ]   美  ['prɑpɚti]
+    n. 性质，性能；财产；所有权
+    ```
+
+    例句:
+
+    ```
+    Richard could easily destroy her personal property to punish her for walking out on him.
+    理查德可以轻而易举地毁掉她的私有财产作为对她背叛他的惩罚。
+
+    A radio signal has both electrical and magnetic properties.
+    无线电信号既具有电的特性也具有磁的特性。
+    ```
