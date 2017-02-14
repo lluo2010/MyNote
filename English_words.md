@@ -1,6 +1,247 @@
 # English words note
 
 
+
+## synchronize, synchronized & synchronous
+
+---
+
+
+1. synchronize
+
+    ```
+    英  ['siŋkrənaiz]   美  ['sɪŋkrənaɪz]
+    vt. 使……合拍；使……同步
+    vi. 同步；同时发生
+    ```
+
+    例句:
+
+    ```
+    Synchronize the score with the film action.
+    让配乐和电影动作同步。 
+    ```
+
+1.  synchronized 
+
+    ```
+    英  ['sɪŋkrənaɪzd]   美  ['sɪŋkrənaɪzd]
+    adj. 同步的；同步化的
+    v. 使协调（synchronize的过去分词）；同时发生；校准
+    ```
+
+1. synchronous 
+
+    ```
+    英  ['sɪŋkrənəs]   美  ['sɪŋkrənəs]
+    adj. 同步的；同时的
+    ```
+
+    例句:
+
+    ```
+    Transitions within states should normally be synchronous, since there is no change of owner.
+    状态间的转换通常应该是同步的，因为所有者没有改变。
+    ```
+
+
+
+
+
+## utilize & utility
+
+---
+
+1. utilize 
+
+    ```
+    英  [ˈjuːtɪˌlaɪz]   美  ['juːtəlaɪz]
+    vt. 利用
+    ```
+
+    例句:
+
+    ```
+    Sound engineers utilize a range of techniques to enhance the quality of the recordings.
+    音响工程师利用一系列的技术来提高录音质量。
+    ```
+
+1. utility 
+
+    ```
+    英  [juːˈtɪlɪtɪ]   美  [ju'tɪləti]
+    n. 实用；效用；公共设施；功用
+    adj. 实用的；通用的；有多种用途的
+    ```
+
+    例句:
+
+    ```
+    public utilities such as gas, electricity and phones.
+    …煤气、电和电话等公用事业。
+    ```
+
+
+
+## technique & technology 
+
+---
+
+1. technique 
+
+    ```
+    英  [tek'niːk]   美  [tɛk'nik]
+    n. 技巧，技术；手法
+    ```
+
+    例句:
+
+    ```
+    ...tests performed using a new technique.
+    …采用一种新技术做的试验。
+    ```
+
+1. technology 
+
+    ```
+    英  [tek'nɒlədʒɪ]   美  [tɛk'nɑlədʒi]
+    n. 技术；工艺；术语
+    ```
+
+    例句:
+
+    ```
+    Technology is changing fast.
+    技术日新月异。
+
+    They should be allowed to wait for cheaper technologies to be developed.
+    他们应该被允许等待更廉价的技术开发出来。
+    ```
+
+
+
+## quality & quantity
+
+---
+
+1. quality 
+
+    ```
+    英  ['kwɒlɪtɪ]   美  ['kwɑləti]
+    n. 质量，[统计] 品质；特性；才能
+    adj. 优质的；高品质的；<英俚>棒极了
+    ```
+
+    例句:
+
+    ```
+    Everyone can greatly improve the quality of life.
+    人人都能大幅提高生活质量。
+
+    ...a college of quality.
+    …一所优质学院
+    ```
+
+1. quantity 
+
+    ```
+    英  ['kwɒntɪtɪ]   美  ['kwɑntəti]
+    n. 量，数量；大量；总量
+    ```
+
+    例句:
+
+    ```
+    ...a small quantity of water.
+    …少量的水。
+
+    ```
+
+
+
+## engine, engineer & engineering
+
+---
+
+1. engine 
+
+    ```
+    英  ['endʒɪn]   美  ['ɛndʒɪn]
+    n. 引擎，发动机；机车，火车头；工具
+    ```
+
+    例句:
+
+    ```
+    He got into the driving seat and started the engine.
+    他坐上驾驶座椅，发动了引擎。
+    ```
+
+1. engineer 
+
+    ```
+    英  [endʒɪ'nɪə]   美  [,ɛndʒɪ'nɪr]
+    n. 工程师；工兵；火车司机
+    vt. 设计；策划；精明地处理
+    vi. 设计；建造
+    ```
+
+    例句:
+
+    ```
+    They send a service engineer to fix the disk drive.
+    他们派一位维修师来修理磁盘驱动器。
+    ```
+
+1. engineering 
+
+    ```
+    英  [endʒɪ'nɪərɪŋ]   美  ['ɛndʒə'nɪrɪŋ]
+    n. 工程，工程学
+    v. 设计；管理（engineer的ing形式）；建造
+    ```
+
+    例句:
+
+    ```
+    ...graduates with degrees in engineering.
+    …获得工程学学位的毕业生。
+    ```
+
+
+
+## college & colleague
+
+1. college
+
+    ```
+    英  ['kɒlɪdʒ]   美  ['kɑlɪdʒ]
+    n. 大学；学院；学会
+    ```
+
+    例句:
+
+    ```
+    Their daughter Joanna is taking business courses at a local college.
+    他们的女儿乔安娜正在当地一所大学修习商务课程。
+    ```
+
+1. colleague 
+
+    ```
+    英  ['kɒliːg]   美  ['kɑliɡ]
+    n. 同事，同僚
+    ```
+
+    例句:
+
+    ```
+    Without consulting his colleagues, he flew from Los Angeles to Chicago.
+    在没有和同事商量的情况下，他从洛杉矶飞到了芝加哥。
+    ```
+
+
+
 ## reverse & reserve & preserve
 
 ---
@@ -704,3 +945,5 @@
     A radio signal has both electrical and magnetic properties.
     无线电信号既具有电的特性也具有磁的特性。
     ```
+
+
