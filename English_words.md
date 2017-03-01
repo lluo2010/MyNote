@@ -738,7 +738,7 @@
 
 
 
-## indefinite & infinite
+## indefinite & infinite & definite & definition & 
 
 ---
 
@@ -794,6 +794,33 @@
     她对自己的未来没有明确的计划。
     ```
 
+1. definition 
+
+    ```
+    英  [defɪ'nɪʃ(ə)n]   美  [,dɛfɪ'nɪʃən]
+    n. 定义；[物] 清晰度；解说
+    ```
+
+    例句:
+
+    ```
+    There is no general agreement on a standard definition of intelligence.
+    对智力的标准定义意见不统一。
+    ```
+
+1. define 
+
+    ```
+    英  [dɪ'faɪn]   美  [dɪ'faɪn]
+    vt. 定义；使明确；规定
+    ```
+
+    例句:
+
+    ```
+    The Convention Against Torture defines torture as any act that inflicts severe pain or suffering, physical or mental.
+    《反酷刑条约》把酷刑定义为任何造成严重身心疼痛和受苦的行为。
+    ```
 
 
 ## route & routine

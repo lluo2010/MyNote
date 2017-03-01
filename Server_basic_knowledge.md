@@ -1,6 +1,64 @@
 # Server基本知识
 
 
+## Tomcat
+
+---
+
+Tomcat 是一个小型的轻量级应用服务器，在中小型系统和并发访问用户不是很多的场合下被普遍使用，是开发和调试JSP 程序的首选，因为Tomcat 技术先进、性能稳定，成为目前比较流行的Web 应用服务器。Tomcat是应用（java）服务器，它只是一个servlet容器，是Apache的扩展，但它是独立运行的。
+
+对于一个初学者来说，可以这样认为，当在一台机器上配置好Apache 服务器，可利用它响应HTML（标准通用标记语言下的一个应用）页面的访问请求。实际上Tomcat 部分是Apache 服务器的扩展，但它是独立运行的，所以当你运行tomcat 时，它实际上作为一个与Apache 独立的进程单独运行的。
+
+诀窍是，当配置正确时，Apache 为HTML页面服务，而Tomcat 实际上运行JSP 页面和Servlet。另外，Tomcat和IIS等Web服务器一样，具有处理HTML页面的功能，另外它还是一个Servlet和JSP容器，独立的Servlet容器是Tomcat的默认模式。不过，Tomcat处理静态HTML的能力不如Apache服务器。
+
+### Tomcat的工作模式
+
+Tomcat有3中工作模式：
+
+1. 作为独立的Servlet容器，这是默认工作模式。此时Tomcat会作为独立的服务器，Servlet容器组件作为服务器的一部分存在
+1. 作为其他web服务器进程内的Servlet容器，此时Tomcat分为web服务器插件和Servlet容器组件，web服务器插件在其他web服务器进程地址空间内启动一个Jav虚拟机运行Servlet容器组件
+
+![其他web服务器进程内的Servlet容器](http://images.cnitblog.com/blog/489427/201303/08220947-5fb3aa8facab47daa7977014cdf6ec47.png)
+
+1. 作为其他web服务器外的Servlet容器组件，此时Tomcat分为web服务器插件和Servlet容器组件，web服务器插件会在其他web服务器进程地址空间之外启动一个Java虚拟机运行Servlet容器组件
+
+
+### Tomcat Server处理一个HTTP请求的过程
+
+![Tomcat Server处理一个HTTP请求的过程](http://img1.tuicool.com/Mnqe22j.png!web)
+
+1. 用户点击网页内容，请求被发送到本机端口8080，被在那里监听的Coyote HTTP/1.1 Connector获得。 
+1. Connector把该请求交给它所在的Service的Engine来处理，并等待Engine的回应。 
+1. Engine获得请求localhost/test/index.jsp，匹配所有的虚拟主机Host。 
+1. Engine匹配到名为localhost的Host（即使匹配不到也把请求交给该Host处理，因为该Host被定义为该Engine的默认主机），名为localhost的Host获得请求/test/index.jsp，匹配它所拥有的所有的Context。Host匹配到路径为/test的Context（如果匹配不到就把该请求交给路径名为“ ”的Context去处理）。 
+1. path=“/test”的Context获得请求/index.jsp，在它的mapping table中寻找出对应的Servlet。Context匹配到URL PATTERN为*.jsp的Servlet,对应于JspServlet类。 
+1. 构造HttpServletRequest对象和HttpServletResponse对象，作为参数调用JspServlet的doGet（）或doPost（）.执行业务逻辑、数据存储等程序。 
+1. Context把执行完之后的HttpServletResponse对象返回给Host。 
+1. Host把HttpServletResponse对象返回给Engine。 
+1. Engine把HttpServletResponse对象返回Connector。 
+1. Connector把HttpServletResponse对象返回给客户Browser。
+
+
+
+## Serlvet
+
+---
+
+Servlet（Server Applet），全称Java Servlet，暂无中文译文。是用Java编写的服务器端程序。其主要功能在于交互式地浏览和修改数据，生成动态Web内容。狭义的Servlet是指Java语言实现的一个接口(一个类)，广义的Servlet是指任何实现了这个Servlet接口的类，一般情况下，人们将Servlet理解为后者。
+
+Servlet运行于支持Java的应用服务器中。从原理上讲，Servlet可以响应任何类型的请求，但绝大多数情况下Servlet只用来扩展基于HTTP协议的Web服务器。
+
+Servlet生命周期???
+
+todo...XXX
+
+
+[Servlet 简介](http://www.runoob.com/servlet/servlet-intro.html)
+
+todo...XXX
+
+
+
 ## CDN
 
 ---
@@ -390,3 +448,4 @@ xx
 1. [一分钟了解负载均衡的一切***](http://www.oschina.net/news/77156/load-balance)
 1. [Nginx/LVS/HAProxy负载均衡软件的优缺点详解**](http://www.ha97.com/5646.html)
 1. [为什么数据库读写分离可以提高性能](https://my.oschina.net/candiesyangyang/blog/203425)
+1. [Servlet 简介*](http://www.runoob.com/servlet/servlet-intro.html)
