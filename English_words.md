@@ -1,6 +1,89 @@
 # English words note
 
 
+## international & internal
+
+---
+
+1. international 
+
+    ```
+    英  [ɪntə'næʃ(ə)n(ə)l]   美  [,ɪntɚ'næʃnəl]
+    n. 国际组织；国际体育比赛；外国居留者；国际股票
+    adj. 国际的；两国（或以上）国家的；超越国界的；国际关系的；世界的
+    ```
+
+    例句:
+
+    ```
+    ...an international agreement against exporting arms to that country.
+    …一项禁止向那个国家出口武器的国际协议。
+
+    ...internationally agreed-upon rules.
+    …国际上公认的章程。
+    ```
+
+1. internal 
+
+    ```
+    英  [ɪn'tɜːn(ə)l]   美  [ɪn'tɝnl]
+    adj. 内部的；内在的；国内的
+    ```
+
+    例句:
+
+    ```
+    ...Russia's Ministry of Internal Affairs.
+    …俄罗斯内务部。
+
+    The state is not a unified and internally coherent entity.
+    这个国家不是一个内部凝聚的统一体。
+    ```
+
+## central & centre
+
+---
+
+1. centre 
+    ```
+    英  ['sentə]   美  [sɛntɚ]
+    vi. 以…为中心
+    vt. 集中；将…放在中央
+    n. 中心
+    adj. 中央的
+    ```
+
+    例句:
+
+    ```
+    New York is also a major international financial centre.
+    纽约也是一个重要的国际金融中心。
+
+    ...the city centre.
+    …市中心。
+
+    ```
+
+1. central 
+
+    ```
+    英  ['sentr(ə)l]   美  ['sɛntrəl]
+    adj. 中心的；主要的；中枢的
+    n. 电话总机
+    ```
+
+    例句:
+
+    ```
+    ...a central location in the capital.
+    …首都的一个中心地带。
+
+    This is a centrally planned economy.
+    这是一种中央计划经济。
+    ```
+
+
+
 
 ## synchronize, synchronized & synchronous
 
