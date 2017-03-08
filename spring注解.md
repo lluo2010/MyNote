@@ -1,25 +1,26 @@
-# Spring 注解
+# Spring annotation注解 note
 
 
 ## bean标记
 
 用@Component标记一个组件，Spring 2.5 中提供@Component 注释外，还定义了几个拥有特殊语义的注释， 分别是：@Repository、@Service、@Controller
 
-@Component @Controller @Service @Repository的作用
-1、@controller 控制器（注入服务）
-2、@service 服务（注入dao）
-3、@repository dao（实现dao访问）
-4、@component （把普通pojo实例化到spring容器中，相当于配置文件中的<bean id=”” class=””/>）
+@Component @Controller @Service @Repository的作用:
+
+1. @controller 控制器（注入服务）
+1. service 服务（注入dao）
+1. @repository dao（实现dao访问）
+1. @component （把普通pojo实例化到spring容器中，相当于配置文件中的<bean id=”” class=””/>）
 @Component,@Service,@Controller,@Repository注解的类，并把这些类纳入进spring容器中管理。
 
 下面写这个是引入component的扫描组件
 <context:component-scan base-package="com.iitshare"/>
 其中base-package为需要扫描的包，可以包括下面的子包，比如：com.iitshare.hapishop、com.iitshare.hapicms
 
-1、@Service用于标注业务层组件
-2、@Controller用于标注控制层组件(如struts中的action)
-3、@Repository用于标注数据访问组件，即DAO组件.
-4、@Component泛指组件，当组件不好归类的时候，我们可以使用这个注解进行标注。
+1. @Service用于标注业务层组件
+1. @Controller用于标注控制层组件(如struts中的action)
+1. @Repository用于标注数据访问组件，即DAO组件.
+1. @Component泛指组件，当组件不好归类的时候，我们可以使用这个注解进行标注。
 
 
 参考[@Component @Controller @Service @Repository的作用](http://www.iitshare.com/role-of-component-repository.html)
@@ -190,7 +191,134 @@ todo...XXX
 todo...XXX
 
 
+## @ContextConfiguration
 
+@ContextConfiguration is used to determine how to load and configure an ApplicationContext in integratrion tests.
+
+@ContextConfiguration 注解有以下两个常用的属性：
+1. locations：可以通过该属性手工指定 Spring 配置文件所在的位置，可以指定一个或多个 Spring 配置文件。如下所示：
+
+```
+@ContextConfiguration(locations={“xx/yy/beans1.xml”,” xx/yy/beans2.xml”})
+```
+
+1. inheritLocations：是否要继承父测试用例类中的 Spring 配置文件，默认为 true。如下面的例子：
+
+```
+ContextConfiguration(locations={"base-context.xml"})  
+ public class BaseTest {  
+     // ...  
+ }  
+ @ContextConfiguration(locations={"extended-context.xml"})  
+ public class ExtendedTest extends BaseTest {  
+     // ...  
+ }  
+```
+如果 inheritLocations 设置为 false，则 ExtendedTest 仅会使用 extended-context.xml 配置文件，否则将使用 base-context.xml 和 extended-context.xml 这两个配置文件。
+
+
+location可以是单个文件或者多个文件:
+
+1. 单个文件
+
+    ```
+    @ContextConfiguration(Locations="../applicationContext.xml")  
+    @ContextConfiguration(classes = SimpleConfiguration.class)
+    ```
+
+1. 多个文件时，可用{}
+
+    ```
+    @ContextConfiguration(locations = { "classpath*:/spring1.xml", "classpath*:/spring2.xml" })  
+    ```
+
+
+## @ComponentScan
+
+todo...XXX
+
+
+## @Import
+
+@Import注解在4.2之前只支持导入配置类, 在4.2,@Import注解支持导入普通的java类,并将其声明成一个bean.
+
+普通类DemoService如下:
+
+```
+public class DemoService {
+    public void doSomething(){
+        System.out.println("everything is all fine");
+    }
+
+}
+```
+
+通过下面的d@Import将其导入,声明成bean:
+
+```
+@Configuration
+@Import(DemoService.class)//在spring 4.2之前是不不支持的
+public class DemoConfig {
+}
+```
+
+然后就可以通过context.getBean获取了, 如下, 输出为"everything is all fine":
+
+```
+public class Main {
+    public static void main(String[] args) {
+        AnnotationConfigApplicationContext context =
+                new AnnotationConfigApplicationContext("com.wisely.spring4_2.imp");
+        DemoService ds = context.getBean(DemoService.class);
+        ds.doSomething();
+    }
+}
+```
+
+
+```
+@Configuration
+public class SchedulerConfig {
+
+	@Bean(name="scheduler")
+	public SchedulerBo suchedulerBo(){
+
+		return new SchedulerBo();
+
+	}
+}
+
+@Configuration
+public class CustomerConfig {
+
+	@Bean(name="customer")
+	public CustomerBo customerBo(){
+
+		return new CustomerBo();
+
+	}
+}
+
+@Configuration
+@Import({ CustomerConfig.class, SchedulerConfig.class })
+public class AppConfig {
+
+}
+
+
+public static void main(String[] args) {
+		ApplicationContext context = new AnnotationConfigApplicationContext(
+				AppConfig.class);
+
+		CustomerBo customer = (CustomerBo) context.getBean("customer");
+		customer.printMsg("Hello 1");
+
+		SchedulerBo scheduler = (SchedulerBo) context.getBean("scheduler");
+		scheduler.printMsg("Hello 2");
+
+	}
+```
+所以除了导入普通类, 也可以采用@Import可以导入多个@Configuration的类.
 
 ## @ExceptionHandler
 
@@ -198,6 +326,31 @@ todo...XXX
 
 
 
+### @PathVariable & @RequestParam
+
+它用于将 @Path 中的模板变量映射到方法参数，模板变量支持使用正则表达式，变量名与正则表达式之间用分号分隔。
+
+使用@RequestParam时，URL是这样的：http://host:port/path?参数名=参数值
+使用@PathVariable时，URL是这样的：http://host:port/path/参数值
+
+```
+@RequestMapping(value="/user",method = RequestMethod.GET)  
+   public @ResponseBody  
+   User printUser(@RequestParam(value = "id", required = false, defaultValue = "0")  
+   int id) {  
+    User user = new User();  
+       user = userService.getUserById(id);  
+       return user;  
+   }  
+     
+   @RequestMapping(value="/user/{id:\\d+}",method = RequestMethod.GET)  
+   public @ResponseBody  
+   User printUser2(@PathVariable int id) {  
+       User user = new User();  
+       user = userService.getUserById(id);  
+       return user;  
+   }  
+```
 
 
 ## 几个重要的类
@@ -211,8 +364,17 @@ todo...XXX
     
 
 
+' threw exception; nested exception is net.sf.ehcache.CacheException: Another CacheManager with same name 'es1' already exists in the same VM. Please provide unique names for each CacheManager in the config or do one of following:
+
+1. Use one of the CacheManager.create() static factory methods to reuse same CacheManager with same name or create one if necessary
+2. Shutdown the earlier cacheManager before creating new one with same name.
 
 
-每个程序员需掌握的20个代码命名小贴士
-http://www.jb51.net/article/62771.htm
 
+
+## Reference
+
+---
+
+1. [Spring 3 JavaConfig @Import example*](http://www.mkyong.com/spring3/spring-3-javaconfig-import-example/)
+1. [使用 Java 配置进行 Spring bean 管理**](https://www.ibm.com/developerworks/cn/webservices/ws-springjava/index.html)

@@ -3,6 +3,8 @@
 ** 注意: 由于Mac上我们把Ctrl和Command对调了, 所有如果有些快捷键不起作用可以互相对调. **
 
 1. 查看定义: ctrl+B
+1. 跳转到接口方法实现处: Ctrl+Alt+B，
+1. 转到父类: Ctrl+U
 1. 回到最近修改的代码处:Ctrl-Shift-Backspace
 1. 查找引用: alt+F7
 1. 代码提示:
@@ -71,5 +73,4 @@ android studio的:
 ---
 
 1. [十大Intellij IDEA快捷键](http://blog.csdn.net/dc_726/article/details/42784275)
-
 1. [IntelliJ IDEA 的 20 个代码自动完成的特性](http://www.oschina.net/question/12_70799)
