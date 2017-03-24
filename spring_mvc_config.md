@@ -25,12 +25,10 @@
 
 
 
-处理器拦截器运行流程图
-
-1. 正常流程:
-
-2. 中断流程:
+投资记录, , 标的详情页,标的评价
 
 
+资产详情
 
-中断流程中，比如是HandlerInterceptor2中断的流程（preHandle返回false），此处仅调用它之前拦截器的preHandle返回true的afterCompletion方法。
+
+[移动端]用户评价-标的评价页
