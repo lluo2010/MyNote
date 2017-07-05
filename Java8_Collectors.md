@@ -1,0 +1,102 @@
+---
+title: Java8 Collectors note
+tags: Note
+notebook: Java
+---
+
+# Java8 Collectors note
+
+
+## test
+
+    public List<String> allTitles(List<Task> tasks) {
+            return tasks.stream().map(Task::getTitle).collect(toList());
+        }
+
+    public Set<String> uniqueTitles(List<Task> tasks) {
+        return tasks.stream().map(Task::getTitle).collect(toSet());
+    }
+
+
+    private static LinkedHashSet<Task> collectToLinkedHaskSet(List<Task> tasks) {
+    return tasks.stream().collect(toCollection(LinkedHashSet::new));
+    }
+
+
+
+Collectors.groupingBy
+
+    private static Map<TaskType, List<Task>> groupTasksByType(List<Task> tasks) {
+        return tasks.stream().collect(groupingBy(Task::getType));
+    }
+
+
+    private static Map<String, List<Task>> groupingByTag(List<Task> tasks) {
+            return tasks.stream().
+                    flatMap(task -> task.getTags().stream().map(tag -> new TaskTag(tag, task))).
+                    collect(groupingBy(TaskTag::getTag, Collectors.mapping(TaskTag::getTask,toList())));
+    }
+
+
+    private static Map<String, Long> tagsAndCount(List<Task> tasks) {
+            return tasks.stream().
+            flatMap(task -> task.getTags().stream().map(tag -> new TaskTag(tag, task))).
+            collect(groupingBy(TaskTag::getTag, counting()));
+        }
+
+
+    Collectors.partitioningBy
+    private static Map<Boolean, List<Task>> partitionOldAndFutureTasks(List<Task> tasks) {
+    return tasks.stream().collect(partitioningBy(task -> task.getDueOn().isAfter(LocalDate.now())));
+    }
+
+
+
+Collectors.toMap
+    return tasks.stream().collect(toMap(Task::getTitle, task -> task));
+
+    return tasks.stream().collect(toMap(Task::getTitle, identity()));
+
+    private static Map<String, Task> taskMap_duplicates(List<Task> tasks) {
+    return tasks.stream().collect(toMap(Task::getTitle, identity(), (t1, t2) -> t2));
+    }
+
+    public Map<String, Task> collectToMap(List<Task> tasks) {
+        return tasks.stream().collect(toMap(Task::getTitle, identity(), (t1, t2) -> t2, LinkedHashMap::new));
+    }
+
+
+
+
+
+    public int totalTagCount(List<Task> tasks) {
+        return tasks.stream().collect(Collectors.summingInt(task -> task.getTags().size()));
+    }
+
+    public String titleSummary(List<Task> tasks) {
+        return tasks.stream().map(Task::getTitle).collect(joining(";"));
+    }
+
+
+
+    IntSummaryStatistics summaryStatistics = tasks.stream().map(Task::getTitle).collect(summarizingInt(String::length));
+    System.out.println(summaryStatistics.getAverage()); //32.4
+    System.out.println(summaryStatistics.getCount()); //5
+    System.out.println(summaryStatistics.getMax()); //44
+    System.out.println(summaryStatistics.getMin()); //24
+    System.out.println(summaryStatistics.getSum()); //162
+
+
+    private static String allTitles(List<Task> tasks) {
+    return tasks.stream().map(Task::getTitle).collect(Collectors.joining(", "));
+    }
+
+
+
+## Reference:
+
+- [java8之collector](http://www.jianshu.com/p/c0d5c3094324)
+- [Java8新特性之collectors***](http://www.drfish.me/java/2016/09/14/Java8%E6%96%B0%E7%89%B9%E6%80%A7%E4%B9%8Bcollectors/)
+
+
+

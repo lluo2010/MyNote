@@ -1,6 +1,91 @@
 # English words note
 
 
+## vary & variety & various
+
+1. various 
+
+    ```
+    英  ['veərɪəs]   美  ['vɛrɪəs]
+    adj. 各种各样的；多方面的
+    ```
+
+    例句：
+
+    ···
+    His plan is to spread the capital between various building society accounts.
+    他的计划是把资金分散到类型不同的建房互助会的账户中。
+
+    ···
+
+
+1. variety 
+
+    ```
+    英  [və'raɪətɪ]   美  [və'raɪəti]
+    n. 多样；种类；杂耍；变化，多样化
+    ```
+
+    例句：
+
+    ```
+    Susan's idea of freedom was to have variety in her life style.
+    苏珊对自由的理解就是拥有生活方式的多样化。
+    ```
+
+
+1. vary 
+
+    ```
+    英  ['veərɪ]   美  [ˈveri]
+    vi. 变化；变异；违反
+    vt. 改变；使多样化；变奏
+    ```
+
+    例句：
+
+    ···
+    As they're handmade, each one varies slightly.
+    由于它们是手工制作的，每一件都会略有不同。
+    ···
+
+
+## flood & blood
+
+----
+
+1. flood 
+
+    ```
+    英  [flʌd]   美  [flʌd]
+    vt. 淹没；充满；溢出
+    vi. 涌出；涌进；为水淹没
+    n. 洪水；泛滥；一大批
+    ```
+
+    例句：
+
+    ```
+    More than 70 people were killed in the floods, caused when a dam burst.
+    大坝决堤引发的洪水灾吞噬了七十多人的生命。
+    ```
+
+1. blood 
+
+    ```
+    英  [blʌd]   美  [blʌd]
+    n. 血，血液；血统
+    vt. 从…抽血；使先取得经验
+    n. (Blood)人名；(英、西)布拉德
+    ```
+
+    例句：
+    ```
+    His shirt was covered in blood.
+    他的衬衫沾满了血。
+    ```
+
+
 ## international & internal
 
 ---
